@@ -1,0 +1,33 @@
+{
+  "applicationId": "js.neutralino.zero",
+  "version": "1.0.0",
+  "defaultMode": "window",
+  "documentRoot": "/RPGproject/dist/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "nativeAllowList": [
+    "app.*",
+    "filesystem.readDirectory"
+  ],
+  "modes": {
+    "window": {
+      "title": "RPGproject",
+      "width": 1920,
+      "height": 1080,
+      "minWidth": 400,
+      "minHeight": 200,
+      "icon": "/RPGproject/dist/icon/asterix.ico",
+      "fullscreen": true,
+      "additionalBrowserArguments": "--disable-web-security",
+      "enableInspector": true
+    }
+  },
+  "cli": {
+    "binaryName": "RPGproject",
+    "resourcesPath": "RPGproject/dist/",
+    "extensionsPath": "/extensions/",
+    "binaryVersion": "6.4.0",
+    "clientVersion": "6.4.0"
+  }
+}
