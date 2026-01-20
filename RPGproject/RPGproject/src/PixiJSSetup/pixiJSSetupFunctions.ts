@@ -111,11 +111,17 @@ export const PixiJSEnvironment = new (class {
       playerSprite.x = Math.max(0,Math.min(playerSprite.x, (tilemap.columns-1) * 48))
       playerSprite.y = Math.max(0,Math.min(playerSprite.y, (tilemap.rows-1)*48))
 
-      let camX = playerSprite.x - this.SceneManager!.getScene("map")!.container!.width / 2;
-      let camY = playerSprite.y - this.SceneManager!.getScene("map")!.container!.height / 2;
+      let camX = playerSprite.x - app.screen.width / 2;
+      let camY = playerSprite.y - app.screen.height / 2;
+      //let camX = playerSprite.x - this.SceneManager!.getScene("map")!.container!.width / 2;
+      //let camY = playerSprite.y - this.SceneManager!.getScene("map")!.container!.height / 2;
 
-      camX = Math.max(0, Math.min(camX, tilemap.columns * 48 - this.SceneManager!.getScene("map")!.container!.width))
-      camY = Math.max(0, Math.min(camY, tilemap.columns * 48 - this.SceneManager!.getScene("map")!.container!.height))
+      camX = Math.max(0, Math.min(camX, (tilemap.columns-0) * 48 - app.screen.width))
+      camY = Math.max(0, Math.min(camY, (tilemap.rows - 0) * 48 - app.screen.height))
+      //camX = Math.max(0, Math.min(camX, tilemap.columns * 48 - this.SceneManager!.getScene("map")!.container!.width))
+      //camY = Math.max(0, Math.min(camY, tilemap.columns * 48 - this.SceneManager!.getScene("map")!.container!.height))
+
+      console.log(camY)
 
       this.SceneManager!.getScene("map")!.container!.position.set(-camX, -camY);
     });

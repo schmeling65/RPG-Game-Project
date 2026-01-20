@@ -6,8 +6,8 @@ export class TileMap extends CompositeTilemap {
   rows: number;
   constructor() {
     super();
-    this.columns = 5;
-    this.rows = 30;
+    this.columns = 50;
+    this.rows = 23;
     this.createGrid(this.columns, this.rows);
   }
 
@@ -15,7 +15,6 @@ export class TileMap extends CompositeTilemap {
     for (let columncounter = 0; columncounter < columns; columncounter++) {
       for (let rowcounter = 0; rowcounter < rows; rowcounter++) {
         //TODO: Read TextureData, for now dummydata
-        console.log(Texture.from);
         if ((rowcounter + columncounter) % 2 == 0) {
           this.tile(
             "SienceFictionDrausenA3",
