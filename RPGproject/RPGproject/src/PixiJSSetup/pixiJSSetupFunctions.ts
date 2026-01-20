@@ -55,8 +55,8 @@ export const PixiJSEnvironment = new (class {
   createMap(app: Application) {
     let scene = this.SceneManager!.getScene("map")!;
     scene.tilemap = new TileMap();
-    let tilemap = scene.tilemap.createTileMap()
-    scene.container!.addChild(tilemap);
+    //let tilemap = scene.tilemap.createTileMap()
+    scene.container!.addChild(scene.tilemap);
     let playersprite = scene.tilemap.createPlayerOnTileMap(Assets.get("imgTanks"))
     scene.playersprite = playersprite;
     scene.container!.addChild(playersprite);
@@ -108,8 +108,8 @@ export const PixiJSEnvironment = new (class {
       if (Keybindings.keys.get("ArrowLeft")) playerSprite.x -= speed;
       if (Keybindings.keys.get("ArrowRight")) playerSprite.x += speed;
 
-      playerSprite.x = Math.max(0,Math.min(playerSprite.x, tilemap.columns * 48))
-      playerSprite.y = Math.max(0,Math.min(playerSprite.y, tilemap.rows*48))
+      playerSprite.x = Math.max(0,Math.min(playerSprite.x, (tilemap.columns-1) * 48))
+      playerSprite.y = Math.max(0,Math.min(playerSprite.y, (tilemap.rows-1)*48))
 
       let camX = playerSprite.x - this.SceneManager!.getScene("map")!.container!.width / 2;
       let camY = playerSprite.y - this.SceneManager!.getScene("map")!.container!.height / 2;
