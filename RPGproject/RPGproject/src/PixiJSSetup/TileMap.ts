@@ -1,5 +1,4 @@
 import { CompositeTilemap } from "@pixi/tilemap";
-import { Rectangle, Sprite, Texture } from "pixi.js";
 
 export class TileMap extends CompositeTilemap {
   columns: number;

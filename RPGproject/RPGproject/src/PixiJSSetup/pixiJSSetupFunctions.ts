@@ -1,8 +1,6 @@
-import { Application, Assets, Container, Rectangle, Sprite, Texture } from "pixi.js";
-import { CompositeTilemap } from "@pixi/tilemap";
+import { Application, Assets, Container } from "pixi.js";
 import { TextureManager } from "./TextureManager";
 import { TileMap } from "./TileMap";
-import { Keybindings } from "../JSUtils/controlsAndKeybidings";
 import { Player } from "./Player";
 
 export const PixiJSEnvironment = new (class {
@@ -47,7 +45,7 @@ export const PixiJSEnvironment = new (class {
     await Assets.load(["SienceFictionDrausenA3", "imgTanks"]).then(
       async () => {},
     );
-    this.createMap(app);
+    this.createMap();
     await this.createPlayer()
     this.startTicker(app);
   }
@@ -59,7 +57,7 @@ export const PixiJSEnvironment = new (class {
     scene.container!.addChild(scene.playersprite)
   }
 
-  createMap(app: Application) {
+  createMap() {
     let scene = this.SceneManager!.getScene("map")!;
     scene.tilemap = new TileMap();
     scene.container!.addChild(scene.tilemap);
@@ -69,6 +67,7 @@ export const PixiJSEnvironment = new (class {
     await Assets.init().then(async () => {});
   }
 
+  /*
   startTicker(app: Application) {
      app.ticker.add(() => {
       //const speed = this.player!.scrollSpeed;
@@ -86,8 +85,32 @@ export const PixiJSEnvironment = new (class {
       let camX = playerSprite.x - app.screen.width / 2;
       let camY = playerSprite.y - app.screen.height / 2;
 
-      camX = Math.max(0, Math.min(camX, (tilemap.columns-0) * 48 - app.screen.width))
-      camY = Math.max(0, Math.min(camY, (tilemap.rows - 0) * 48 - app.screen.height))
+      camX = Math.max(0, Math.min(camX, (tilemap.columns) * 48 - app.screen.width))
+      camY = Math.max(0, Math.min(camY, (tilemap.rows) * 48 - app.screen.height))
+
+      this.SceneManager!.getScene("map")!.container!.position.set(-camX, -camY);
+    });
+  }
+    */
+    startTicker(app: Application) {
+     app.ticker.add(() => {
+      //const speed = this.player!.scrollSpeed;
+      let playerSprite = this.SceneManager!.getScene("map")!.playersprite
+      let tilemap = this.SceneManager!.getScene("map")!.tilemap
+      playerSprite = this.player!.movePlayer(playerSprite) || playerSprite;
+      //if (Keybindings.keys.get("ArrowUp")) playerSprite.y -= speed;
+      //if (Keybindings.keys.get("ArrowDown")) playerSprite.y += speed;
+      //if (Keybindings.keys.get("ArrowLeft")) playerSprite.x -= speed;
+      //if (Keybindings.keys.get("ArrowRight")) playerSprite.x += speed;
+
+      playerSprite.x = Math.max(0,Math.min(playerSprite.x, (tilemap.columns-1) * 48))
+      playerSprite.y = Math.max(0,Math.min(playerSprite.y, (tilemap.rows-1)*48))
+
+      let camX = playerSprite.x - app.screen.width / 2;
+      let camY = playerSprite.y - app.screen.height / 2;
+
+      camX = Math.max(0, Math.min(camX, (tilemap.columns) * 48 - app.screen.width))
+      camY = Math.max(0, Math.min(camY, (tilemap.rows) * 48 - app.screen.height))
 
       this.SceneManager!.getScene("map")!.container!.position.set(-camX, -camY);
     });

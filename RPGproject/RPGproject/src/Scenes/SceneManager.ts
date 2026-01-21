@@ -7,7 +7,7 @@ export const SceneManager = new class {
     constructor() {
         this.scenes = new Map();
         //TODO:later mainmenu
-        this.activeSceneID = null;
+        this.activeSceneID = "";
         this.addScene(new Scene("map"))
     }
 
