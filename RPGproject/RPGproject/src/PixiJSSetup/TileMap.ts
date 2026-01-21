@@ -43,14 +43,4 @@ export class TileMap extends CompositeTilemap {
       }
     }
   }
-
-  createPlayerOnTileMap(playertexture: any): Sprite {
-    var textureObject = new Texture({
-      source: playertexture,
-      frame: new Rectangle(0, 0, 48, 48),
-    });
-    var playerSprite = new Sprite(textureObject);
-    playerSprite.position.set(0, 0);
-    return playerSprite;
-  }
 }

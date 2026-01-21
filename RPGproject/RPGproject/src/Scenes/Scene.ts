@@ -7,12 +7,6 @@ export class Scene {
   constructor(_name: string) {
     this.id = _name;
     this.container = null;
-    /*
-    this.container = new Container();
-    this.container.visible = false;
-    console.log(this.container.getBounds())
-    */
-    //create Reactangle that is as big as the canvas
   }
 
   update(): void {
