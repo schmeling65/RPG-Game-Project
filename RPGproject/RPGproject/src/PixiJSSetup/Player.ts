@@ -65,7 +65,7 @@ export class Player {
     isPlayerMoving(): boolean {
         return this.isMoving;
     }
-    //entry
+
     movePlayer(sprite: Sprite) {
         if (!this.isPlayerMoving()) {
             let input = Keybindings.checkInput() as Direction
@@ -77,7 +77,6 @@ export class Player {
             }
         }
         else {
-            console.log("noi")
             return this.updateMovement(sprite)
         }
     }

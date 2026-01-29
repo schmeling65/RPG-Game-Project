@@ -42,7 +42,7 @@ export const PixiJSEnvironment = new (class {
   }
 
   async loadMapAssets(app: Application) {
-    await Assets.load(["SienceFictionDrausenA3", "imgTanks"]).then(
+    await Assets.load(["GroundTextures", "imgTanks"]).then(
       async () => {},
     );
     this.createMap();
@@ -59,7 +59,7 @@ export const PixiJSEnvironment = new (class {
 
   createMap() {
     let scene = this.SceneManager!.getScene("map")!;
-    scene.tilemap = new TileMap();
+    scene.tilemap = new TileMap("/levels/level_start.json");
     scene.container!.addChild(scene.tilemap);
   }
   
@@ -67,31 +67,6 @@ export const PixiJSEnvironment = new (class {
     await Assets.init().then(async () => {});
   }
 
-  /*
-  startTicker(app: Application) {
-     app.ticker.add(() => {
-      //const speed = this.player!.scrollSpeed;
-      const speed = 4;
-      let playerSprite = this.SceneManager!.getScene("map")!.playersprite
-      let tilemap = this.SceneManager!.getScene("map")!.tilemap
-      if (Keybindings.keys.get("ArrowUp")) playerSprite.y -= speed;
-      if (Keybindings.keys.get("ArrowDown")) playerSprite.y += speed;
-      if (Keybindings.keys.get("ArrowLeft")) playerSprite.x -= speed;
-      if (Keybindings.keys.get("ArrowRight")) playerSprite.x += speed;
-
-      playerSprite.x = Math.max(0,Math.min(playerSprite.x, (tilemap.columns-1) * 48))
-      playerSprite.y = Math.max(0,Math.min(playerSprite.y, (tilemap.rows-1)*48))
-
-      let camX = playerSprite.x - app.screen.width / 2;
-      let camY = playerSprite.y - app.screen.height / 2;
-
-      camX = Math.max(0, Math.min(camX, (tilemap.columns) * 48 - app.screen.width))
-      camY = Math.max(0, Math.min(camY, (tilemap.rows) * 48 - app.screen.height))
-
-      this.SceneManager!.getScene("map")!.container!.position.set(-camX, -camY);
-    });
-  }
-    */
     startTicker(app: Application) {
      app.ticker.add(() => {
       //const speed = this.player!.scrollSpeed;
