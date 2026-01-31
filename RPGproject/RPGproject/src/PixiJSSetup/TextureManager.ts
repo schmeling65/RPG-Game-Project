@@ -18,5 +18,10 @@ export const TextureManager = new class {
 
   async loadTextureOnDemand(texture: string){
     await Assets.load(texture)
+    console.log("loaded: "+texture)
+  }
+
+  getAssetOrTextureFromCache(texture: string) {
+    return Assets.get(texture)
   }
 }();

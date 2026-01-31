@@ -1,5 +1,7 @@
 import { CompositeTilemap } from "@pixi/tilemap";
 import { Requester } from "../JSUtils/request";
+import type { AssetsClass } from "pixi.js";
+import { TextureManager } from "./TextureManager";
 
 interface MapData {
   textures: string[];
@@ -15,26 +17,36 @@ export class TileMap extends CompositeTilemap {
   textures!: string[];
   groundTiles!: number[];
   objectTiles!: number[];
-  constructor(_jsonName: string) {
+  constructor() {
     super();
-    this.loadMapInformationsFromJsonFile(_jsonName).then(mapdata => {
-      this.textures = mapdata.textures;
-      this.columns = mapdata.width;
-      this.rows = mapdata.height;
-      this.groundTiles = mapdata.groundData
-      this.objectTiles = mapdata.objectTiles
-      this.createGrid(this.columns, this.rows);
-    });
   }
 
-  async loadMapInformationsFromJsonFile(filename: string) {
-    return await Requester.makeXMLHttpRequest(filename).then((resolve: unknown) => {
-      let mapdata = resolve as MapData
-      return mapdata
+  async initData(_jsonName: string) {
+    const mapdata = await this.loadMapInformationsFromJsonFile(_jsonName)
+    this.textures = mapdata.textures;
+    this.columns = mapdata.width;
+    this.rows = mapdata.height;
+    this.groundTiles = mapdata.groundData;
+    this.objectTiles = mapdata.objectTiles;
+    let loadingPromises = this.textures.map(async (texture) =>  {
+      await TextureManager.loadTextureOnDemand(texture)
+      return texture
     })
+    await Promise.all(loadingPromises)
+    this.createGrid(this.columns, this.rows);
+    };
+
+  async loadMapInformationsFromJsonFile(filename: string) {
+    return await Requester.makeXMLHttpRequest(filename).then(
+      (resolve: unknown) => {
+        let mapdata = resolve as MapData;
+        return mapdata;
+      },
+    );
   }
 
   createGrid(columns: number, rows: number) {
+    console.log("creating grid");
     for (let columncounter = 0; columncounter < columns; columncounter++) {
       for (let rowcounter = 0; rowcounter < rows; rowcounter++) {
         //TODO: Read TextureData, for now dummydata

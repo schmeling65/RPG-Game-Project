@@ -1,20 +1,27 @@
 import { Rectangle, Sprite, Texture } from "pixi.js";
 import { Keybindings, type Direction } from "../JSUtils/controlsAndKeybidings";
+import { TextureManager } from "./TextureManager";
 
 export class Player {
-    texture: Texture
+    textureString: string
+    texture!: Texture
     scrollSpeed: number
     characterTilePosX: number | null = null
     characterTilePosY: number | null = null
     isMoving: boolean;
     direction: Direction;
     moveProgressToNextTile: number;
-    constructor(texture: Texture) {
-        this.texture = texture
+    constructor(texture: string) {
+        this.textureString = texture
         this.scrollSpeed = 4
         this.isMoving = false
         this.direction = "none"
         this.moveProgressToNextTile = 0
+    }
+
+    async initTextureFromString() {
+        await TextureManager.loadTextureOnDemand(this.textureString)
+        this.texture = TextureManager.getAssetOrTextureFromCache(this.textureString)
     }
 
     initPlayer(): Sprite {

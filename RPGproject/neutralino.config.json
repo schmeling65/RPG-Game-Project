@@ -17,7 +17,7 @@
       "height": 1080,
       "minWidth": 400,
       "minHeight": 200,
-      "icon": "/RPGproject/dist/icon/asterix.ico",
+      "icon": "/RPGproject/dist/icon/game.ico",
       "fullscreen": true,
       "additionalBrowserArguments": "--disable-web-security",
       "enableInspector": true

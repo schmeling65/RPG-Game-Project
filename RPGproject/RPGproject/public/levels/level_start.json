@@ -1,5 +1,5 @@
 {
-    "textures": ["GroundTextures"],
+    "textures": ["GroundTextures","button"],
     "height": 10,
     "width": 10,
     "groundData": [

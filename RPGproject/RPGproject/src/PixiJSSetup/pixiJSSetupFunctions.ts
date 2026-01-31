@@ -12,55 +12,65 @@ export const PixiJSEnvironment = new (class {
     this.SceneManager = null;
     this.player = null;
   }
-  async initApp(app: Application) {
-    await app
+  initApp(app: Application) {
+    app
       .init({ background: "#000000", resizeTo: window })
-      .then(async () => {
+      .then(() => {
         document.body.appendChild(app.canvas);
         this.loadEnvironment(app);
       });
   }
 
-  async loadEnvironment(app: Application) {
+  loadEnvironment(app: Application) {
     this.initAssetsEnvironment();
-    await TextureManager.loadTextureInformation().then(
-      async (_resolved: string[]) => {
+    TextureManager.loadTextureInformation().then(
+      (_resolved: string[]) => {
         _resolved.forEach((element: string) => {
           Assets.add({ alias: element, src: "/tilessets/" + element + ".png" });
         });
-      },
+        this.setupMapScene(app);
+      }
+      ,
     );
-    this.setupMapScene(app);
   }
 
-  async setupMapScene(app: Application) {
-    this.SceneManager = (await import("../Scenes/SceneManager")).SceneManager;
-    this.SceneManager.getScene("map")!.container = new Container();
+  setupMapScene(app: Application) {
+    (import("../Scenes/SceneManager")).then((data) => {
+      this.SceneManager = data.SceneManager
+      this.SceneManager.getScene("map")!.container = new Container();
     app.stage.addChild(this.SceneManager.getScene("map")!.container as Container)
     this.SceneManager.setActiveScene("map");
     this.loadMapAssets(app);
+    }
+    )
   }
 
-  async loadMapAssets(app: Application) {
-    await Assets.load(["GroundTextures", "imgTanks"]).then(
-      async () => {},
-    );
-    this.createMap();
-    await this.createPlayer()
-    this.startTicker(app);
+  loadMapAssets(app: Application) {
+    Promise.all([
+      this.createMap(),
+      this.createPlayer()
+
+    ]).then(() => {
+      this.startTicker(app)
+    }
+    ).catch(
+      //TODO: Error handler
+    ) 
   }
 
   async createPlayer() {
-    this.player = new Player(Assets.get("imgTanks"))
+    this.player = new Player("imgTanks")
+    await this.player.initTextureFromString()
     let scene = this.SceneManager!.getScene("map")!
     scene.playersprite = this.player.initPlayer()
     scene.container!.addChild(scene.playersprite)
   }
 
-  createMap() {
+  async createMap() {
     let scene = this.SceneManager!.getScene("map")!;
-    scene.tilemap = new TileMap("/levels/level_start.json");
+    scene.tilemap = new TileMap();
     scene.container!.addChild(scene.tilemap);
+    return scene.tilemap.initData("/levels/level_start.json");
   }
   
   async initAssetsEnvironment() {
@@ -68,6 +78,7 @@ export const PixiJSEnvironment = new (class {
   }
 
     startTicker(app: Application) {
+      console.log("ticker added")
      app.ticker.add(() => {
       //const speed = this.player!.scrollSpeed;
       let playerSprite = this.SceneManager!.getScene("map")!.playersprite
