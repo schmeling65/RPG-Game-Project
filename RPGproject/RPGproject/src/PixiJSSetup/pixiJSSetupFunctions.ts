@@ -78,7 +78,6 @@ export const PixiJSEnvironment = new (class {
   }
 
     startTicker(app: Application) {
-      console.log("ticker added")
      app.ticker.add(() => {
       //const speed = this.player!.scrollSpeed;
       let playerSprite = this.SceneManager!.getScene("map")!.playersprite

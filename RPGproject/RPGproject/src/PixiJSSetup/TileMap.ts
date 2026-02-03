@@ -1,7 +1,6 @@
 import { CompositeTilemap } from "@pixi/tilemap";
 import { Requester } from "../JSUtils/request";
-import type { AssetsClass } from "pixi.js";
-import { TextureManager } from "./TextureManager";
+import { TextureManager, type textureMetaData } from "./TextureManager";
 
 interface MapData {
   textures: string[];
@@ -14,8 +13,9 @@ interface MapData {
 export class TileMap extends CompositeTilemap {
   columns!: number;
   rows!: number;
-  textures!: string[];
+  texturesStrings!: string[];
   groundTiles!: number[];
+  groundTextures!: Record<number,textureMetaData>
   objectTiles!: number[];
   constructor() {
     super();
@@ -23,17 +23,21 @@ export class TileMap extends CompositeTilemap {
 
   async initData(_jsonName: string) {
     const mapdata = await this.loadMapInformationsFromJsonFile(_jsonName)
-    this.textures = mapdata.textures;
+    this.texturesStrings = mapdata.textures;
     this.columns = mapdata.width;
     this.rows = mapdata.height;
     this.groundTiles = mapdata.groundData;
     this.objectTiles = mapdata.objectTiles;
-    let loadingPromises = this.textures.map(async (texture) =>  {
-      await TextureManager.loadTextureOnDemand(texture)
-      return texture
+    this.groundTextures = {}
+    let loadingPromises = this.texturesStrings.map(async (textureString) =>  {
+      await TextureManager.loadTextureOnDemand(textureString)
+      return TextureManager.getAssetOrTextureFromCache(textureString)
     })
-    await Promise.all(loadingPromises)
-    this.createGrid(this.columns, this.rows);
+    let allAssets = await Promise.all(loadingPromises)
+    allAssets.forEach((asset) => {
+      TextureManager.getTexturesFromTextureFile(asset, this.groundTextures)
+    })
+    this.createGrid();
     };
 
   async loadMapInformationsFromJsonFile(filename: string) {
@@ -45,27 +49,45 @@ export class TileMap extends CompositeTilemap {
     );
   }
 
-  createGrid(columns: number, rows: number) {
-    console.log("creating grid");
-    for (let columncounter = 0; columncounter < columns; columncounter++) {
-      for (let rowcounter = 0; rowcounter < rows; rowcounter++) {
+  createGrid() {
+    
+    let tilecounter = 0
+    this.groundTiles.forEach((textureID, arrayIndex) => {
+      let xPosOfTile = (arrayIndex % this.columns) * 48
+      console.log(xPosOfTile)
+      let yPosOfTile = (arrayIndex / this.rows >> 0) * 48
+      console.log(yPosOfTile)
+      let tileData = this.groundTextures[textureID]
+      this.tile(tileData.file, xPosOfTile, yPosOfTile, {
+        u: tileData.posX,
+        v: tileData.posY,
+        tileWidth: 48,
+        tileHeight: 48
+      })
+      tilecounter++
+    })
+    
+    /*
+    for (let columncounter = 0; columncounter < this.columns; columncounter++) {
+      for (let rowcounter = 0; rowcounter < this.rows; rowcounter++) {
         //TODO: Read TextureData, for now dummydata
         if ((rowcounter + columncounter) % 2 == 0) {
-          this.tile("GroundTextures", columncounter * 48, rowcounter * 48, {
+          this.tile("Projekt_Tiles", columncounter * 48, rowcounter * 48, {
             u: 0 * 48,
-            v: 4 * 48,
+            v: 0 * 48,
             tileWidth: 48,
             tileHeight: 48,
           });
         } else {
-          this.tile("GroundTextures", columncounter * 48, rowcounter * 48, {
-            u: 1 * 48,
-            v: 4 * 48,
+          this.tile("Projekt_Tiles", columncounter * 48, rowcounter * 48, {
+            u: 0 * 48,
+            v: 1 * 48,
             tileWidth: 48,
             tileHeight: 48,
           });
         }
       }
     }
+      */
   }
 }
