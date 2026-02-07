@@ -63,6 +63,7 @@ export const PixiJSEnvironment = new (class {
     await this.player.initTextureFromString()
     let scene = this.SceneManager!.getScene("map")!
     scene.playersprite = this.player.initPlayer()
+    console.log(this.player)
     scene.container!.addChild(scene.playersprite)
   }
 
@@ -79,14 +80,9 @@ export const PixiJSEnvironment = new (class {
 
     startTicker(app: Application) {
      app.ticker.add(() => {
-      //const speed = this.player!.scrollSpeed;
       let playerSprite = this.SceneManager!.getScene("map")!.playersprite
       let tilemap = this.SceneManager!.getScene("map")!.tilemap
-      playerSprite = this.player!.movePlayer(playerSprite) || playerSprite;
-      //if (Keybindings.keys.get("ArrowUp")) playerSprite.y -= speed;
-      //if (Keybindings.keys.get("ArrowDown")) playerSprite.y += speed;
-      //if (Keybindings.keys.get("ArrowLeft")) playerSprite.x -= speed;
-      //if (Keybindings.keys.get("ArrowRight")) playerSprite.x += speed;
+      playerSprite = this.player!.movePlayer(playerSprite, tilemap) || playerSprite;
 
       playerSprite.x = Math.max(0,Math.min(playerSprite.x, (tilemap.columns-1) * 48))
       playerSprite.y = Math.max(0,Math.min(playerSprite.y, (tilemap.rows-1)*48))

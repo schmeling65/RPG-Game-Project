@@ -1,13 +1,14 @@
 import { Rectangle, Sprite, Texture } from "pixi.js";
 import { Keybindings, type Direction } from "../JSUtils/controlsAndKeybidings";
 import { TextureManager } from "./TextureManager";
+import type { TileMap } from "./TileMap";
 
 export class Player {
     textureString: string
     texture!: Texture
     scrollSpeed: number
-    characterTilePosX: number | null = null
-    characterTilePosY: number | null = null
+    characterTilePosX: number
+    characterTilePosY: number
     isMoving: boolean;
     direction: Direction;
     moveProgressToNextTile: number;
@@ -17,6 +18,8 @@ export class Player {
         this.isMoving = false
         this.direction = "none"
         this.moveProgressToNextTile = 0
+        this.characterTilePosX = 0
+        this.characterTilePosY = 0
     }
 
     async initTextureFromString() {
@@ -42,10 +45,10 @@ export class Player {
         this.moveProgressToNextTile += this.distancePerFrame();
 
         if (this.moveProgressToNextTile >= 1) {
-            if (this.direction === "up") this.characterTilePosY!--;
-            if (this.direction === "down") this.characterTilePosY!++;
-            if (this.direction === "left") this.characterTilePosX!--;
-            if (this.direction === "right") this.characterTilePosX!++;
+            if (this.direction === "up") this.characterTilePosY--;
+            if (this.direction === "down") this.characterTilePosY++;
+            if (this.direction === "left") this.characterTilePosX--;
+            if (this.direction === "right") this.characterTilePosX++;
 
             this.moveProgressToNextTile = 0;
             this.isMoving = false
@@ -64,8 +67,8 @@ export class Player {
         if (this.direction === "left") offsetX = -this.moveProgressToNextTile;
         if (this.direction === "right") offsetX = this.moveProgressToNextTile;
 
-        sprite.y = (this.characterTilePosY! + offsetY) * 48
-        sprite.x = (this.characterTilePosX! + offsetX) * 48
+        sprite.y = (this.characterTilePosY + offsetY) * 48
+        sprite.x = (this.characterTilePosX + offsetX) * 48
         return sprite
     }
 
@@ -73,10 +76,11 @@ export class Player {
         return this.isMoving;
     }
 
-    movePlayer(sprite: Sprite) {
+    movePlayer(sprite: Sprite, tilemap: TileMap) {
         if (!this.isPlayerMoving()) {
             let input = Keybindings.checkInput() as Direction
             if (input != "none") {
+                if (!tilemap.isBlocked(...this.getNextPosition(input)))
                 this.direction = input;
                 this.isMoving = true
                 this.moveProgressToNextTile = 0
@@ -86,5 +90,16 @@ export class Player {
         else {
             return this.updateMovement(sprite)
         }
+    }
+
+    getNextPosition(input: Direction): [number, number] {
+        let coordinateX = 0
+        let coordinateY = 0
+        if (input === "down") coordinateY++;
+        if (input === "up") coordinateY--
+        if (input === "left") coordinateX--
+        if (input === "right") coordinateX++
+        console.log(this.characterTilePosX + coordinateX)
+        return [this.characterTilePosX + coordinateX, this.characterTilePosY + coordinateY]
     }
 }

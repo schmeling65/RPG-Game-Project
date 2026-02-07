@@ -12,13 +12,6 @@ export const TextureManager = new (class {
 
   loadTextureInformation() {
     return Requester.makeXMLHttpRequest("/environmentdata/textures.json");
-    /*
-      (_response: string[]) => {
-        _response.forEach((element: string) => {
-          Assets.add({ alias: element, src: "/tilessets/" + element });
-        });
-      }
-        */
   }
 
   async loadTextureOnDemand(texture: string) {
@@ -34,8 +27,6 @@ export const TextureManager = new (class {
     let numberOfHorizontalFields = texture.width / 48;
     for (let horzontalFields = 0; horzontalFields < numberOfHorizontalFields; horzontalFields++) {
       for (let verticalFields = 0; verticalFields < numberOfVerticalFields; verticalFields++) {
-        //let frame = new Rectangle(horzontalFields * 48, verticalFields * 48, 48, 48);
-         //let newTexture = (new Texture({ source: texture.source, frame }));
          let textureMetaData: textureMetaData = {
           file: new URL(texture.label!).pathname.split("/").pop()!.replace('.png', ''),
           posX: horzontalFields * 48,

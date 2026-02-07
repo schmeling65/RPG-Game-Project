@@ -8,6 +8,7 @@ interface MapData {
   width: number;
   groundData: number[];
   objectTiles: number[];
+  blockedTiles: number[],
 }
 
 export class TileMap extends CompositeTilemap {
@@ -17,6 +18,7 @@ export class TileMap extends CompositeTilemap {
   groundTiles!: number[];
   groundTextures!: Record<number,textureMetaData>
   objectTiles!: number[];
+  blockedTiles!: number[];
   constructor() {
     super();
   }
@@ -28,6 +30,7 @@ export class TileMap extends CompositeTilemap {
     this.rows = mapdata.height;
     this.groundTiles = mapdata.groundData;
     this.objectTiles = mapdata.objectTiles;
+    this.blockedTiles = mapdata.blockedTiles;
     this.groundTextures = {}
     let loadingPromises = this.texturesStrings.map(async (textureString) =>  {
       await TextureManager.loadTextureOnDemand(textureString)
@@ -49,14 +52,24 @@ export class TileMap extends CompositeTilemap {
     );
   }
 
+  isBlocked(x: number, y: number) {
+    return this.isOutOfBounds(x,y) || this.isBlockedTile(x,y)
+  }
+
+  isBlockedTile(x: number, y: number) {
+    return this.blockedTiles[y * this.rows + x]
+  }
+
+  isOutOfBounds(x: number, y: number){
+    return x < 0 || y < 0 || x >= this.columns || y >= this.rows;
+  }
+
   createGrid() {
     
     let tilecounter = 0
     this.groundTiles.forEach((textureID, arrayIndex) => {
       let xPosOfTile = (arrayIndex % this.columns) * 48
-      console.log(xPosOfTile)
       let yPosOfTile = (arrayIndex / this.rows >> 0) * 48
-      console.log(yPosOfTile)
       let tileData = this.groundTextures[textureID]
       this.tile(tileData.file, xPosOfTile, yPosOfTile, {
         u: tileData.posX,
@@ -66,28 +79,5 @@ export class TileMap extends CompositeTilemap {
       })
       tilecounter++
     })
-    
-    /*
-    for (let columncounter = 0; columncounter < this.columns; columncounter++) {
-      for (let rowcounter = 0; rowcounter < this.rows; rowcounter++) {
-        //TODO: Read TextureData, for now dummydata
-        if ((rowcounter + columncounter) % 2 == 0) {
-          this.tile("Projekt_Tiles", columncounter * 48, rowcounter * 48, {
-            u: 0 * 48,
-            v: 0 * 48,
-            tileWidth: 48,
-            tileHeight: 48,
-          });
-        } else {
-          this.tile("Projekt_Tiles", columncounter * 48, rowcounter * 48, {
-            u: 0 * 48,
-            v: 1 * 48,
-            tileWidth: 48,
-            tileHeight: 48,
-          });
-        }
-      }
-    }
-      */
   }
 }
