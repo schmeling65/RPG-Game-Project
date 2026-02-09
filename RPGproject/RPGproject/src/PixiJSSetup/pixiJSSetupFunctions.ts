@@ -63,7 +63,6 @@ export const PixiJSEnvironment = new (class {
     await this.player.initTextureFromString()
     let scene = this.SceneManager!.getScene("map")!
     scene.playersprite = this.player.initPlayer()
-    console.log(this.player)
     scene.container!.addChild(scene.playersprite)
   }
 

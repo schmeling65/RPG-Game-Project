@@ -4,6 +4,7 @@ import { TextureManager, type textureMetaData } from "./TextureManager";
 
 interface MapData {
   textures: string[];
+  objectstextures: string[];
   height: number;
   width: number;
   groundData: number[];
@@ -14,33 +15,44 @@ interface MapData {
 export class TileMap extends CompositeTilemap {
   columns!: number;
   rows!: number;
-  texturesStrings!: string[];
+  //texturesStrings!: string[];
   groundTiles!: number[];
   groundTextures!: Record<number,textureMetaData>
   objectTiles!: number[];
+  objectTextures!: Record<number,textureMetaData>
   blockedTiles!: number[];
   constructor() {
     super();
   }
 
   async initData(_jsonName: string) {
-    const mapdata = await this.loadMapInformationsFromJsonFile(_jsonName)
-    this.texturesStrings = mapdata.textures;
+    let mapdata = await this.loadMapInformationsFromJsonFile(_jsonName)
+    //this.texturesStrings = mapdata.textures;
     this.columns = mapdata.width;
     this.rows = mapdata.height;
     this.groundTiles = mapdata.groundData;
     this.objectTiles = mapdata.objectTiles;
     this.blockedTiles = mapdata.blockedTiles;
     this.groundTextures = {}
-    let loadingPromises = this.texturesStrings.map(async (textureString) =>  {
+    let loadingPromises = mapdata.textures.map(async (textureString) =>  {
       await TextureManager.loadTextureOnDemand(textureString)
       return TextureManager.getAssetOrTextureFromCache(textureString)
     })
-    let allAssets = await Promise.all(loadingPromises)
-    allAssets.forEach((asset) => {
+    let dataLoaded = await Promise.all(loadingPromises)
+    dataLoaded.forEach((asset) => {
       TextureManager.getTexturesFromTextureFile(asset, this.groundTextures)
     })
-    this.createGrid();
+    this.objectTextures = {}
+    loadingPromises = mapdata.objectstextures.map(async (textureString) => {
+      await TextureManager.loadTextureOnDemand(textureString)
+      return TextureManager.getAssetOrTextureFromCache(textureString)
+    })
+    dataLoaded = await Promise.all(loadingPromises)
+    dataLoaded.forEach((asset) => {
+      TextureManager.getTexturesFromTextureFile(asset, this.objectTextures)
+    })
+    this.createGrid(this.groundTiles, this.groundTextures);
+    this.createGrid(this.objectTiles, this.objectTextures);
     };
 
   async loadMapInformationsFromJsonFile(filename: string) {
@@ -64,13 +76,15 @@ export class TileMap extends CompositeTilemap {
     return x < 0 || y < 0 || x >= this.columns || y >= this.rows;
   }
 
-  createGrid() {
-    
+  createGrid(objectOfTiles: number[], objectOfTextures: Record<number,textureMetaData>) {
     let tilecounter = 0
-    this.groundTiles.forEach((textureID, arrayIndex) => {
+    objectOfTiles.forEach((textureID, arrayIndex) => {
+      if (textureID === 0) {
+        return
+      }
       let xPosOfTile = (arrayIndex % this.columns) * 48
       let yPosOfTile = (arrayIndex / this.rows >> 0) * 48
-      let tileData = this.groundTextures[textureID]
+      let tileData = objectOfTextures[textureID]
       this.tile(tileData.file, xPosOfTile, yPosOfTile, {
         u: tileData.posX,
         v: tileData.posY,

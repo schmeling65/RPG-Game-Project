@@ -99,7 +99,6 @@ export class Player {
         if (input === "up") coordinateY--
         if (input === "left") coordinateX--
         if (input === "right") coordinateX++
-        console.log(this.characterTilePosX + coordinateX)
         return [this.characterTilePosX + coordinateX, this.characterTilePosY + coordinateY]
     }
 }
