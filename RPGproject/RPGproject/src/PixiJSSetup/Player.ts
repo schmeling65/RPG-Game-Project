@@ -1,44 +1,29 @@
-import { Rectangle, Sprite, Texture } from "pixi.js";
+import {Sprite} from "pixi.js";
 import { Keybindings, type Direction } from "../JSUtils/controlsAndKeybidings";
-import { TextureManager } from "./TextureManager";
 import type { TileMap } from "./TileMap";
+import { Character } from "./Character";
 
-export class Player {
-    textureString: string
-    texture!: Texture
-    scrollSpeed: number
-    characterTilePosX: number
-    characterTilePosY: number
-    isMoving: boolean;
-    direction: Direction;
-    moveProgressToNextTile: number;
-    constructor(texture: string) {
-        this.textureString = texture
-        this.scrollSpeed = 4
-        this.isMoving = false
-        this.direction = "none"
-        this.moveProgressToNextTile = 0
-        this.characterTilePosX = 0
-        this.characterTilePosY = 0
-    }
-
-    async initTextureFromString() {
-        await TextureManager.loadTextureOnDemand(this.textureString)
-        this.texture = TextureManager.getAssetOrTextureFromCache(this.textureString)
+export class Player extends Character{
+    constructor(name: string, texturefile: string, xpos: number, ypos: number, viewdirection?: Direction) {
+        super(name,texturefile,xpos,ypos,viewdirection)
     }
 
     initPlayer(): Sprite {
+        /*
         let textureObject = new Texture({
-            source: this.texture as any,
+            source: this.texture[1] as any,
             frame: new Rectangle(0,0,48,48)
         })
-        let playerSprite = new Sprite(textureObject);
-        playerSprite.position.set(0,0);
-        return playerSprite;
+            */
+        this.sprite = new Sprite(this.texture[1]);
+        //position.set(x*48,y*48) und characterTilePosX und Y jeweils 1 2 3 4 setzen
+        // -> anderer Startpunkt
+        this.sprite.position.set(this.characterTilePosX*48,this.characterTilePosY*48);
+        return this.sprite;
     }
 
     distancePerFrame() {
-        return Math.pow(2, this.scrollSpeed) / 256;
+        return Math.pow(2, this.walkSpeed) / 256;
     }
 
     updateMovement(sprite: Sprite){
@@ -76,15 +61,36 @@ export class Player {
         return this.isMoving;
     }
 
+    setLookDirectionWhileMoving() {
+        let index = 0
+        switch(this.direction){
+        case "down":
+            index = 1
+            break;
+        case "left":
+            index = 4
+            break;
+        case "right":
+            index = 7
+            break;
+        case "up":
+            index = 11
+            break;
+        }
+        this.sprite!.texture = this.texture[index]
+    }
+
     movePlayer(sprite: Sprite, tilemap: TileMap) {
         if (!this.isPlayerMoving()) {
             let input = Keybindings.checkInput() as Direction
             if (input != "none") {
-                if (!tilemap.isBlocked(...this.getNextPosition(input)))
                 this.direction = input;
+                this.setLookDirectionWhileMoving()
+                if (!tilemap.isBlocked(...this.getNextPosition(input))) {
                 this.isMoving = true
                 this.moveProgressToNextTile = 0
                 this.updateMovement(sprite)
+                }
             }
         }
         else {

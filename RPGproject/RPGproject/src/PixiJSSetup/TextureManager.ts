@@ -10,8 +10,10 @@ export interface textureMetaData {
 export const TextureManager = new (class {
   constructor() {}
 
-  loadTextureInformation() {
-    return Requester.makeXMLHttpRequest("/environmentdata/textures.json");
+  loadTextureInformations() {
+    let tiletextures = Requester.makeXMLHttpRequest("/environmentdata/tiletextures.json");
+    let charactertextures = Requester.makeXMLHttpRequest("/environmentdata/charactertextures.json");
+    return Promise.all([tiletextures, charactertextures])
   }
 
   async loadTextureOnDemand(texture: string) {
@@ -22,6 +24,7 @@ export const TextureManager = new (class {
     return Assets.get(texture);
   }
 
+  //First all textures in a row, then next row
   getTexturesFromTextureFile(texture: Texture, object: Record<number,textureMetaData>) {
     let numberOfVerticalFields = texture.height / 48;
     let numberOfHorizontalFields = texture.width / 48;

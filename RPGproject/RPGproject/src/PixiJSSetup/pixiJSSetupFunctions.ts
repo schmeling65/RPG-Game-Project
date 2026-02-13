@@ -23,11 +23,14 @@ export const PixiJSEnvironment = new (class {
 
   loadEnvironment(app: Application) {
     this.initAssetsEnvironment();
-    TextureManager.loadTextureInformation().then(
-      (_resolved: string[]) => {
-        _resolved.forEach((element: string) => {
+    TextureManager.loadTextureInformations().then(
+      ([tiletexures, charactertextures]) => {
+        tiletexures.forEach((element: string) => {
           Assets.add({ alias: element, src: "/tilessets/" + element + ".png" });
         });
+        charactertextures.forEach((element: string) => {
+          Assets.add({ alias: element, src: "/characters/" + element + ".png" });
+        })
         this.setupMapScene(app);
       }
       ,
@@ -59,7 +62,7 @@ export const PixiJSEnvironment = new (class {
   }
 
   async createPlayer() {
-    this.player = new Player("imgTanks")
+    this.player = new Player("Spieler","player",0,0)
     await this.player.initTextureFromString()
     let scene = this.SceneManager!.getScene("map")!
     scene.playersprite = this.player.initPlayer()
