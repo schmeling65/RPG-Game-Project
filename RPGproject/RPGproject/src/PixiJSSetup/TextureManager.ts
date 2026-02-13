@@ -11,9 +11,13 @@ export const TextureManager = new (class {
   constructor() {}
 
   loadTextureInformations() {
-    let tiletextures = Requester.makeXMLHttpRequest("/environmentdata/tiletextures.json");
-    let charactertextures = Requester.makeXMLHttpRequest("/environmentdata/charactertextures.json");
-    return Promise.all([tiletextures, charactertextures])
+    let tiletextures = Requester.makeXMLHttpRequest(
+      "/environmentdata/tiletextures.json",
+    );
+    let charactertextures = Requester.makeXMLHttpRequest(
+      "/environmentdata/charactertextures.json",
+    );
+    return Promise.all([tiletextures, charactertextures]);
   }
 
   async loadTextureOnDemand(texture: string) {
@@ -25,22 +29,39 @@ export const TextureManager = new (class {
   }
 
   //First all textures in a row, then next row
-  getTexturesFromTextureFile(texture: Texture, object: Record<number,textureMetaData>) {
+  getTexturesFromTextureFile(
+    texture: Texture,
+    object: Record<number, textureMetaData>,
+  ) {
     let numberOfVerticalFields = texture.height / 48;
     let numberOfHorizontalFields = texture.width / 48;
-    for (let horzontalFields = 0; horzontalFields < numberOfHorizontalFields; horzontalFields++) {
-      for (let verticalFields = 0; verticalFields < numberOfVerticalFields; verticalFields++) {
-         let textureMetaData: textureMetaData = {
-          file: new URL(texture.label!).pathname.split("/").pop()!.replace('.png', ''),
+    for (
+      let horzontalFields = 0;
+      horzontalFields < numberOfHorizontalFields;
+      horzontalFields++
+    ) {
+      for (
+        let verticalFields = 0;
+        verticalFields < numberOfVerticalFields;
+        verticalFields++
+      ) {
+        let textureMetaData: textureMetaData = {
+          file: new URL(texture.label!).pathname
+            .split("/")
+            .pop()!
+            .replace(".png", ""),
           posX: horzontalFields * 48,
-          posY: verticalFields * 48 
-         }
-         this.putTexturesIntoRelationToRelativeUniqueID(textureMetaData, object)
+          posY: verticalFields * 48,
+        };
+        this.putTexturesIntoRelationToRelativeUniqueID(textureMetaData, object);
       }
     }
   }
 
-  putTexturesIntoRelationToRelativeUniqueID(newData: textureMetaData, object: Record<number,textureMetaData>) {
-    object[Object.keys(object).length+1] = newData
+  putTexturesIntoRelationToRelativeUniqueID(
+    newData: textureMetaData,
+    object: Record<number, textureMetaData>,
+  ) {
+    object[Object.keys(object).length + 1] = newData;
   }
 })();

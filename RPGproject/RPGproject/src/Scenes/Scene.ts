@@ -9,16 +9,11 @@ export class Scene {
     this.container = null;
   }
 
-  update(): void {
-
-  };
+  update(): void {}
 
   render(): void {
-    this.container!.visible = true
-  };
+    this.container!.visible = true;
+  }
 
-  destroy(): void {
-
-  };
+  destroy(): void {}
 }
- 
