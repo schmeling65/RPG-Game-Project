@@ -31,10 +31,6 @@ export class Player extends Character {
     return this.sprite;
   }
 
-  distancePerFrame() {
-    return Math.pow(2, this.walkSpeed) / 256;
-  }
-
   updateMovement(sprite: Sprite) {
     this.moveProgressToNextTile += this.distancePerFrame();
 
@@ -46,10 +42,31 @@ export class Player extends Character {
 
       this.moveProgressToNextTile = 0;
       this.isMoving = false;
-      this.direction = "none";
+      //this.direction = "none";
     }
-
+    this.updateMovementAnimation();
     return this.updateScreenPosition(sprite);
+  }
+
+  updateMovementAnimation() {
+    if (this.waitForAnimation()) {
+      let currentDirettionAsIndex = this.getTextureIndexFromDirection()
+      let number = this.movementAnimationGenerator.next().value
+      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number]
+    }
+  }
+
+  waitForAnimation() {
+    console.log("Animations Update: "+ this.currentwaitTimeToNextAnimation)
+    this.currentwaitTimeToNextAnimation -= 1.5
+    if (this.currentwaitTimeToNextAnimation <= 0) {
+      console.log("Reset")
+      this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation
+      return true
+    }
+    else {      
+      return false
+    }
   }
 
   updateScreenPosition(sprite: Sprite) {
@@ -66,31 +83,30 @@ export class Player extends Character {
     return sprite;
   }
 
-  isPlayerMoving(): boolean {
+  isCharacterMoving(): boolean {
     return this.isMoving;
   }
 
   setLookDirectionWhileMoving() {
-    let index = 0;
+    let index = this.getTextureIndexFromDirection();
+    this.sprite!.texture = this.texture[index!];
+  }
+
+  getTextureIndexFromDirection() {
     switch (this.direction) {
       case "down":
-        index = 1;
-        break;
+        return 1;
       case "left":
-        index = 4;
-        break;
+        return 4;
       case "right":
-        index = 7;
-        break;
+        return 7;
       case "up":
-        index = 11;
-        break;
+        return 10;
     }
-    this.sprite!.texture = this.texture[index];
   }
 
   movePlayer(sprite: Sprite, tilemap: TileMap) {
-    if (!this.isPlayerMoving()) {
+    if (!this.isCharacterMoving()) {
       let input = Keybindings.checkInput() as Direction;
       if (input != "none") {
         this.direction = input;
@@ -98,7 +114,7 @@ export class Player extends Character {
         if (!tilemap.isBlocked(...this.getNextPosition(input))) {
           this.isMoving = true;
           this.moveProgressToNextTile = 0;
-          this.updateMovement(sprite);
+          return this.updateMovement(sprite);
         }
       }
     } else {

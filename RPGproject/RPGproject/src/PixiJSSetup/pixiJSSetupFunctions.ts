@@ -60,7 +60,7 @@ export const PixiJSEnvironment = new (class {
   }
 
   async createPlayer() {
-    this.player = new Player("Spieler", "player", 0, 0);
+    this.player = new Player("Player", "player", 0, 0);
     await this.player.initTextureFromString();
     let scene = this.SceneManager!.getScene("map")!;
     scene.playersprite = this.player.initPlayer();

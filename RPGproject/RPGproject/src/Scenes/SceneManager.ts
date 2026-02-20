@@ -2,12 +2,12 @@ import { Scene } from "./Scene";
 
 export const SceneManager = new (class {
   private scenes: Map<string, Scene>;
-  private activeSceneID: string | null;
+  //private activeSceneID: string | null;
 
   constructor() {
     this.scenes = new Map();
     //TODO:later mainmenu
-    this.activeSceneID = "";
+    //this.activeSceneID = "";
     this.addScene(new Scene("map"));
   }
 
@@ -20,7 +20,7 @@ export const SceneManager = new (class {
   }
 
   setActiveScene(sceneID: string) {
-    this.activeSceneID = sceneID;
+    //this.activeSceneID = sceneID;
     this.scenes.get(sceneID)?.render();
   }
 

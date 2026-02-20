@@ -14,12 +14,16 @@ export abstract class Character {
   isMoving: boolean;
   moveProgressToNextTile: number;
   sprite: Sprite | null = null;
+  movementAnimationGenerator: Generator;
+  waitTimeForNextAnimation: number;
+  currentwaitTimeToNextAnimation: number;
   constructor(
     name: string,
     texturefile: string,
     xpos: number,
     ypos: number,
     viewdirection?: Direction,
+    animationSequence?: number[]
   ) {
     this.name = name;
     this.textureFile = texturefile;
@@ -30,7 +34,24 @@ export abstract class Character {
     this.direction = viewdirection || "down";
     this.isMoving = false;
     this.moveProgressToNextTile = 0;
+    this.movementAnimationGenerator = Character.movementAnimaitonGenerator(animationSequence || [1, 0, -1, 0])
+    this.waitTimeForNextAnimation = (9 - this.walkSpeed) * 3
+    this.currentwaitTimeToNextAnimation = 0
   }
+
+  static *movementAnimaitonGenerator(sequence: number[]): Generator<number, void, string | undefined> {
+    let index = 0;
+    while (true) {
+      let signal = yield sequence[index]
+      if (signal === "RESET") {
+        index = 0
+      }
+      else {
+      index = (index + 1) % sequence.length
+      }
+    }
+  }
+
 
   async initTextureFromString() {
     await TextureManager.loadTextureOnDemand(this.textureFile);
@@ -54,5 +75,7 @@ export abstract class Character {
     }
   }
 
-  createSpriteOfCharacter() {}
+  distancePerFrame() {
+    return Math.pow(2, this.walkSpeed) / 256;
+  }
 }
