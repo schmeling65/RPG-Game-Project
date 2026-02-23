@@ -31,8 +31,10 @@ export class Player extends Character {
     return this.sprite;
   }
 
-  updateMovement(sprite: Sprite) {
+  //TODO: Refactoring
+  updateMovement(sprite: Sprite, tilemap?: TileMap) {
     this.moveProgressToNextTile += this.distancePerFrame();
+    let resetToStay;
 
     if (this.moveProgressToNextTile >= 1) {
       if (this.direction === "up") this.characterTilePosY--;
@@ -41,26 +43,50 @@ export class Player extends Character {
       if (this.direction === "right") this.characterTilePosX++;
 
       this.moveProgressToNextTile = 0;
-      this.isMoving = false;
-      //this.direction = "none";
+      if (Keybindings.checkInput() === this.direction) {
+        if (!tilemap!.isBlocked(...this.getNextPosition(this.direction))) {
+          this.isMoving = true;
+        }
+        else {
+          this.isMoving = false;
+          resetToStay = "RESET"
+        }
+      }
+      else {
+        this.isMoving = false;
+        resetToStay = "RESET"
+      }
+      this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation;
     }
-    this.updateMovementAnimation();
+    this.updateMovementAnimation(resetToStay);
     return this.updateScreenPosition(sprite);
   }
 
-  updateMovementAnimation() {
+  updateMovementAnimation(resetFlag: string | undefined) {
+    if (resetFlag !== undefined) {
+      console.log("animationreset triggered")
+      let currentDirettionAsIndex = this.getTextureIndexFromDirection()
+      let number = this.movementAnimationGenerator.next(resetFlag).value
+      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number]
+      this.resetAnimationTimer()
+      console.log("resetted")
+      return
+    }
     if (this.waitForAnimation()) {
+      console.log("animationupdate triggered")
       let currentDirettionAsIndex = this.getTextureIndexFromDirection()
       let number = this.movementAnimationGenerator.next().value
       this.sprite!.texture = this.texture[currentDirettionAsIndex! - number]
     }
   }
 
+  resetAnimationTimer() {
+    this.currentwaitTimeToNextAnimation = 0
+  }
+
   waitForAnimation() {
-    console.log("Animations Update: "+ this.currentwaitTimeToNextAnimation)
     this.currentwaitTimeToNextAnimation -= 1.5
     if (this.currentwaitTimeToNextAnimation <= 0) {
-      console.log("Reset")
       this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation
       return true
     }
@@ -118,7 +144,7 @@ export class Player extends Character {
         }
       }
     } else {
-      return this.updateMovement(sprite);
+      return this.updateMovement(sprite, tilemap);
     }
   }
 

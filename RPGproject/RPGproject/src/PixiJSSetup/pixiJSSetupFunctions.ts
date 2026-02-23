@@ -55,7 +55,6 @@ export const PixiJSEnvironment = new (class {
         this.startTicker(app);
       })
       .catch
-      //TODO: Error handler
       ();
   }
 

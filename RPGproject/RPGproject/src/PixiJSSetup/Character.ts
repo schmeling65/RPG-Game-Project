@@ -44,10 +44,10 @@ export abstract class Character {
     while (true) {
       let signal = yield sequence[index]
       if (signal === "RESET") {
-        index = 0
+        index = 3
       }
       else {
-      index = (index + 1) % sequence.length
+        index = (index + 1) % sequence.length
       }
     }
   }
