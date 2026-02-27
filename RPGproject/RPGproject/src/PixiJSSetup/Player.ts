@@ -46,15 +46,13 @@ export class Player extends Character {
       if (Keybindings.checkInput() === this.direction) {
         if (!tilemap!.isBlocked(...this.getNextPosition(this.direction))) {
           this.isMoving = true;
-        }
-        else {
+        } else {
           this.isMoving = false;
-          resetToStay = "RESET"
+          resetToStay = "RESET";
         }
-      }
-      else {
+      } else {
         this.isMoving = false;
-        resetToStay = "RESET"
+        resetToStay = "RESET";
       }
       this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation;
     }
@@ -64,34 +62,33 @@ export class Player extends Character {
 
   updateMovementAnimation(resetFlag: string | undefined) {
     if (resetFlag !== undefined) {
-      console.log("animationreset triggered")
-      let currentDirettionAsIndex = this.getTextureIndexFromDirection()
-      let number = this.movementAnimationGenerator.next(resetFlag).value
-      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number]
-      this.resetAnimationTimer()
-      console.log("resetted")
-      return
+      console.log("animationreset triggered");
+      let currentDirettionAsIndex = this.getTextureIndexFromDirection();
+      let number = this.movementAnimationGenerator.next(resetFlag).value;
+      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number];
+      this.resetAnimationTimer();
+      console.log("resetted");
+      return;
     }
     if (this.waitForAnimation()) {
-      console.log("animationupdate triggered")
-      let currentDirettionAsIndex = this.getTextureIndexFromDirection()
-      let number = this.movementAnimationGenerator.next().value
-      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number]
+      console.log("animationupdate triggered");
+      let currentDirettionAsIndex = this.getTextureIndexFromDirection();
+      let number = this.movementAnimationGenerator.next().value;
+      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number];
     }
   }
 
   resetAnimationTimer() {
-    this.currentwaitTimeToNextAnimation = 0
+    this.currentwaitTimeToNextAnimation = 0;
   }
 
   waitForAnimation() {
-    this.currentwaitTimeToNextAnimation -= 1.5
+    this.currentwaitTimeToNextAnimation -= 1.5;
     if (this.currentwaitTimeToNextAnimation <= 0) {
-      this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation
-      return true
-    }
-    else {      
-      return false
+      this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation;
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -130,7 +127,7 @@ export class Player extends Character {
         return 10;
     }
   }
-
+  /*
   movePlayer(sprite: Sprite, tilemap: TileMap) {
     if (!this.isCharacterMoving()) {
       let input = Keybindings.checkInput() as Direction;
@@ -146,6 +143,25 @@ export class Player extends Character {
     } else {
       return this.updateMovement(sprite, tilemap);
     }
+  }
+    */
+
+  movePlayer(sprite: Sprite, tilemap: TileMap) {
+    if (this.isCharacterMoving()) {
+      return this.updateMovement(sprite, tilemap);
+    }
+    const input = Keybindings.checkInput() as Direction;
+    if (input === "none") {
+      return;
+    }
+    this.direction = input;
+    this.setLookDirectionWhileMoving();
+    if (tilemap.isBlocked(...this.getNextPosition(input))) {
+      return;
+    }
+    this.isMoving = true;
+    this.moveProgressToNextTile = 0;
+    return this.updateMovement(sprite);
   }
 
   getNextPosition(input: Direction): [number, number] {

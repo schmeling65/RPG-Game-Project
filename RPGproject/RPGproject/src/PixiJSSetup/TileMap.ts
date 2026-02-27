@@ -8,7 +8,7 @@ interface MapData {
   height: number;
   width: number;
   groundData: number[];
-  objectTiles: number[];
+  objectTiles: number[][];
   blockedTiles: number[];
 }
 
@@ -18,7 +18,7 @@ export class TileMap extends CompositeTilemap {
   //texturesStrings!: string[];
   groundTiles!: number[];
   groundTextures!: Record<number, textureMetaData>;
-  objectTiles!: number[];
+  objectTiles!: number[][];
   objectTextures!: Record<number, textureMetaData>;
   blockedTiles!: number[];
   constructor() {
@@ -56,12 +56,10 @@ export class TileMap extends CompositeTilemap {
   }
 
   async loadMapInformationsFromJsonFile(filename: string) {
-    return await Requester.makeXMLHttpRequest(filename).then(
-      (resolve: unknown) => {
-        let mapdata = resolve as MapData;
-        return mapdata;
-      },
-    );
+    return await Requester.makeXMLHttpRequest(filename).then((resolve: unknown) => {
+      let mapdata = resolve as MapData;
+      return mapdata;
+    });
   }
 
   isBlocked(x: number, y: number) {
@@ -77,24 +75,37 @@ export class TileMap extends CompositeTilemap {
   }
 
   createGrid(
-    objectOfTiles: number[],
+    objectOfTiles: number[] | number[][],
     objectOfTextures: Record<number, textureMetaData>,
   ) {
-    let tilecounter = 0;
     objectOfTiles.forEach((textureID, arrayIndex) => {
+      if (Array.isArray(textureID)) {
+        textureID.forEach((textureID, _) => {
+          this.placeTileOnGrid(textureID, arrayIndex, objectOfTextures);
+        });
+        return;
+      }
       if (textureID === 0) {
         return;
       }
-      let xPosOfTile = (arrayIndex % this.columns) * 48;
-      let yPosOfTile = ((arrayIndex / this.rows) >> 0) * 48;
-      let tileData = objectOfTextures[textureID];
-      this.tile(tileData.file, xPosOfTile, yPosOfTile, {
-        u: tileData.posX,
-        v: tileData.posY,
-        tileWidth: 48,
-        tileHeight: 48,
-      });
-      tilecounter++;
+      this.placeTileOnGrid(textureID, arrayIndex, objectOfTextures);
+    });
+  }
+
+  placeTileOnGrid(
+    textureID: number,
+    arrayIndex: number,
+    objectOfTextures: Record<number, textureMetaData>,
+  ) {
+    let xPosOfTile = (arrayIndex % this.columns) * 48;
+    let yPosOfTile = ((arrayIndex / this.rows) >> 0) * 48;
+    let tileData = objectOfTextures[textureID];
+    this.tile(tileData.file, xPosOfTile, yPosOfTile, {
+      u: tileData.posX,
+      v: tileData.posY,
+      tileWidth: 48,
+      tileHeight: 48,
     });
   }
 }
+
