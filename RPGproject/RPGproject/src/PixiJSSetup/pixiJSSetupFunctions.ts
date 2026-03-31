@@ -8,7 +8,9 @@ export const PixiJSEnvironment = new (class {
     | (typeof import("../Scenes/SceneManager"))["SceneManager"]
     | null;
   private player: Player | null;
+  private EventManager: (typeof import("./Events.ts"))["EventManager"] | null;
   constructor() {
+    this.EventManager = null;
     this.SceneManager = null;
     this.player = null;
   }
@@ -50,12 +52,18 @@ export const PixiJSEnvironment = new (class {
   }
 
   loadMapAssets(app: Application) {
-    Promise.all([this.createMap(), this.createPlayer()])
+    Promise.all([this.createMap(), this.createPlayer(), this.createEventManager()])
       .then(() => {
         this.startTicker(app);
       })
       .catch
       ();
+  }
+
+  async createEventManager() {
+    return import("./Events.ts").then((data) => {
+    this.EventManager = data.EventManager;
+    })
   }
 
   async createPlayer() {

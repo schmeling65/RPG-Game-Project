@@ -2,6 +2,7 @@ import { Sprite } from "pixi.js";
 import { Keybindings, type Direction } from "../JSUtils/controlsAndKeybidings";
 import type { TileMap } from "./TileMap";
 import { Character } from "./Character";
+import { EventManager } from "./Events";
 
 export class Player extends Character {
   constructor(
@@ -15,15 +16,7 @@ export class Player extends Character {
   }
 
   initPlayer(): Sprite {
-    /*
-        let textureObject = new Texture({
-            source: this.texture[1] as any,
-            frame: new Rectangle(0,0,48,48)
-        })
-            */
     this.sprite = new Sprite(this.texture[1]);
-    //position.set(x*48,y*48) und characterTilePosX und Y jeweils 1 2 3 4 setzen
-    // -> anderer Startpunkt
     this.sprite.position.set(
       this.characterTilePosX * 48,
       this.characterTilePosY * 48,
@@ -32,7 +25,7 @@ export class Player extends Character {
   }
 
   //TODO: Refactoring
-  updateMovement(sprite: Sprite, tilemap?: TileMap) {
+  updateMovement(sprite: Sprite, tilemap: TileMap) {
     this.moveProgressToNextTile += this.distancePerFrame();
     let resetToStay;
 
@@ -43,6 +36,7 @@ export class Player extends Character {
       if (this.direction === "right") this.characterTilePosX++;
 
       this.moveProgressToNextTile = 0;
+      EventManager.executeEvent(this.characterTilePosX,this.characterTilePosY,tilemap,"steppedOnEvents")
       if (Keybindings.checkInput() === this.direction) {
         if (!tilemap!.isBlocked(...this.getNextPosition(this.direction))) {
           this.isMoving = true;
@@ -62,16 +56,13 @@ export class Player extends Character {
 
   updateMovementAnimation(resetFlag: string | undefined) {
     if (resetFlag !== undefined) {
-      console.log("animationreset triggered");
       let currentDirettionAsIndex = this.getTextureIndexFromDirection();
       let number = this.movementAnimationGenerator.next(resetFlag).value;
       this.sprite!.texture = this.texture[currentDirettionAsIndex! - number];
       this.resetAnimationTimer();
-      console.log("resetted");
       return;
     }
     if (this.waitForAnimation()) {
-      console.log("animationupdate triggered");
       let currentDirettionAsIndex = this.getTextureIndexFromDirection();
       let number = this.movementAnimationGenerator.next().value;
       this.sprite!.texture = this.texture[currentDirettionAsIndex! - number];
@@ -127,24 +118,6 @@ export class Player extends Character {
         return 10;
     }
   }
-  /*
-  movePlayer(sprite: Sprite, tilemap: TileMap) {
-    if (!this.isCharacterMoving()) {
-      let input = Keybindings.checkInput() as Direction;
-      if (input != "none") {
-        this.direction = input;
-        this.setLookDirectionWhileMoving();
-        if (!tilemap.isBlocked(...this.getNextPosition(input))) {
-          this.isMoving = true;
-          this.moveProgressToNextTile = 0;
-          return this.updateMovement(sprite);
-        }
-      }
-    } else {
-      return this.updateMovement(sprite, tilemap);
-    }
-  }
-    */
 
   movePlayer(sprite: Sprite, tilemap: TileMap) {
     if (this.isCharacterMoving()) {
@@ -161,7 +134,7 @@ export class Player extends Character {
     }
     this.isMoving = true;
     this.moveProgressToNextTile = 0;
-    return this.updateMovement(sprite);
+    return this.updateMovement(sprite,tilemap);
   }
 
   getNextPosition(input: Direction): [number, number] {

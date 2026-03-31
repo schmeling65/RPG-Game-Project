@@ -10,7 +10,10 @@ interface MapData {
   groundData: number[];
   objectTiles: number[][];
   blockedTiles: number[];
-}
+  events: {
+      steppedOnTile: string[][],
+      interaction: string[][]
+  }}
 
 export class TileMap extends CompositeTilemap {
   columns!: number;
@@ -21,6 +24,8 @@ export class TileMap extends CompositeTilemap {
   objectTiles!: number[][];
   objectTextures!: Record<number, textureMetaData>;
   blockedTiles!: number[];
+  steppedOnEvents!: string[][];
+  interactionEvents!: string[][];
   constructor() {
     super();
   }
@@ -51,6 +56,8 @@ export class TileMap extends CompositeTilemap {
     dataLoaded.forEach((asset) => {
       TextureManager.getTexturesFromTextureFile(asset, this.objectTextures);
     });
+    this.steppedOnEvents = mapdata.events.steppedOnTile;
+    this.interactionEvents = mapdata.events.interaction;
     this.createGrid(this.groundTiles, this.groundTextures);
     this.createGrid(this.objectTiles, this.objectTextures);
   }
@@ -66,8 +73,20 @@ export class TileMap extends CompositeTilemap {
     return this.isOutOfBounds(x, y) || this.isBlockedTile(x, y);
   }
 
+  getTileID(x: number, y: number) {
+    return y * this.rows + x
+  }
+
+  setTileBlocking(x:number, y:number) {
+    this.blockedTiles[this.getTileID(x,y)] = 1
+  }
+
+  removeTileBlocking(x:number, y:number) {
+    this.blockedTiles[this.getTileID(x,y)] = 0
+  }
+
   isBlockedTile(x: number, y: number) {
-    return this.blockedTiles[y * this.rows + x];
+    return this.blockedTiles[this.getTileID(x,y)];
   }
 
   isOutOfBounds(x: number, y: number) {
