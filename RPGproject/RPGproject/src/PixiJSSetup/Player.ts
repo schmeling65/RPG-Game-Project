@@ -36,7 +36,12 @@ export class Player extends Character {
       if (this.direction === "right") this.characterTilePosX++;
 
       this.moveProgressToNextTile = 0;
-      EventManager.executeEvent(this.characterTilePosX,this.characterTilePosY,tilemap,"steppedOnEvents")
+
+      const [hasEvent,callback] = EventManager.checkEventOnTile(this.characterTilePosX,this.characterTilePosY,tilemap,"steppedOnEvents")
+      if (hasEvent) {
+         EventManager.queueEvent(callback)
+      }
+      
       if (Keybindings.checkInput() === this.direction) {
         if (!tilemap!.isBlocked(...this.getNextPosition(this.direction))) {
           this.isMoving = true;
@@ -51,21 +56,23 @@ export class Player extends Character {
       this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation;
     }
     this.updateMovementAnimation(resetToStay);
-    return this.updateScreenPosition(sprite);
+    let spriteUpdatedScreenPos = this.updateScreenPosition(sprite);
+    //console.log(sprite.y)
+    return spriteUpdatedScreenPos;
   }
 
   updateMovementAnimation(resetFlag: string | undefined) {
     if (resetFlag !== undefined) {
-      let currentDirettionAsIndex = this.getTextureIndexFromDirection();
+      let currentDirectionAsIndex = this.getTextureIndexFromDirection();
       let number = this.movementAnimationGenerator.next(resetFlag).value;
-      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number];
+      this.sprite!.texture = this.texture[currentDirectionAsIndex! - number];
       this.resetAnimationTimer();
       return;
     }
     if (this.waitForAnimation()) {
-      let currentDirettionAsIndex = this.getTextureIndexFromDirection();
+      let currentDirectionAsIndex = this.getTextureIndexFromDirection();
       let number = this.movementAnimationGenerator.next().value;
-      this.sprite!.texture = this.texture[currentDirettionAsIndex! - number];
+      this.sprite!.texture = this.texture[currentDirectionAsIndex! - number];
     }
   }
 
@@ -91,7 +98,7 @@ export class Player extends Character {
     if (this.direction === "up") offsetY = -this.moveProgressToNextTile;
     if (this.direction === "left") offsetX = -this.moveProgressToNextTile;
     if (this.direction === "right") offsetX = this.moveProgressToNextTile;
-
+    console.log(sprite.x)
     sprite.y = (this.characterTilePosY + offsetY) * 48;
     sprite.x = (this.characterTilePosX + offsetX) * 48;
     return sprite;

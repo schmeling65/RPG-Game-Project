@@ -1,4 +1,4 @@
-import { Application, Assets, Container } from "pixi.js";
+import { Application, Assets, Container} from "pixi.js";
 import { TextureManager } from "./TextureManager";
 import { TileMap } from "./TileMap";
 import { Player } from "./Player";
@@ -87,11 +87,11 @@ export const PixiJSEnvironment = new (class {
 
   startTicker(app: Application) {
     app.ticker.add(() => {
+      this.EventManager!.triggerEvents()
       let playerSprite = this.SceneManager!.getScene("map")!.playersprite;
       let tilemap = this.SceneManager!.getScene("map")!.tilemap;
-      playerSprite =
-        this.player!.movePlayer(playerSprite, tilemap) || playerSprite;
-
+      playerSprite = this.player!.movePlayer(playerSprite, tilemap) || playerSprite;
+      
       playerSprite.x = Math.max(
         0,
         Math.min(playerSprite.x, (tilemap.columns - 1) * 48),
@@ -111,6 +111,7 @@ export const PixiJSEnvironment = new (class {
       camY = Math.max(0, Math.min(camY, tilemap.rows * 48 - app.screen.height));
 
       this.SceneManager!.getScene("map")!.container!.position.set(-camX, -camY);
+      console.log(playerSprite.x)
     });
   }
 })();

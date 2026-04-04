@@ -4,39 +4,47 @@ type EventType = "steppedOnEvents" | "interactionEvents";
 
 export const EventManager = new (class {
   private eventFunctions: Map<string, Function>;
+  private hasEvent: boolean;
+  private eventCallback: string;
+  private queueOfCallbacksOfEvents: string[]
   constructor() {
+    this.queueOfCallbacksOfEvents = [];
     this.eventFunctions = new Map<string, Function>();
-    this.addKnownFunction("testCallback", this.testCallback);
+    this.hasEvent = false;
+    this.eventCallback = "";
+    this.addEventCallback("testCallback", this.testCallback);
   }
-  addKnownFunction(funcName: string, func: Function) {
+  addEventCallback(funcName: string, func: Function) {
     this.eventFunctions.set(funcName, func);
   }
 
-  isEventOnTile(x: number, y: number, tilemap: TileMap, typeOfEvent: EventType) {
-    let tile = tilemap.getTileID(x, y);
-    let events = tilemap[typeOfEvent];
-    return [events[tile].length > 0, events[tile][0]];
+  checkEventOnTile(x: number, y: number, tilemap: TileMap, typeOfEvent: EventType): [boolean, string] {
+    const tile = tilemap.getTileID(x, y);
+    const events = tilemap[typeOfEvent];
+    return [events[tile].length > 0,events[tile][0]];
+  }
+
+  queueEvent(funcName: string){
+    this.queueOfCallbacksOfEvents.push(funcName);
   }
 
   testCallback() {
     alert("steppedOnEvent Proced");
   }
-  executeEvent(x: number, y: number, tilemap: TileMap, typeOfEvent: EventType) {
-    console.log("event: " + typeOfEvent + " procced");
-    let [hasEvent, callback] = this.isEventOnTile(x, y, tilemap, typeOfEvent);
-    console.log(hasEvent);
-    console.log(callback);
-    if (hasEvent && callback) {
-      let eventFunction = this.eventFunctions.get(callback as string);
-      if (eventFunction) {
-        try {
-          eventFunction();
-        } catch (error) {
-          alert(`Fehler bei der Ausführung von "${callback}":\n\n${error}`);
+  triggerEvents() {
+    for (let Eventnumber = 1; Eventnumber <= this.queueOfCallbacksOfEvents.length; Eventnumber++) {
+      const funcName = this.queueOfCallbacksOfEvents.shift();
+      if (funcName) {
+        const callback = this.eventFunctions.get(funcName)
+        if (callback) {
+          callback()
         }
-      } else {
-        // Hier greift die Warnung, wenn die Funktion in der Map fehlt
-        alert(`Event-Fehler: Die Funktion "${callback}" ist nicht registriert!`);
+        else {
+          alert(`Callbackfunction ${funcName}`)
+        }
+      }
+      else {
+        alert("No Function to be called. EventQueue is Empty!");
       }
     }
   }
