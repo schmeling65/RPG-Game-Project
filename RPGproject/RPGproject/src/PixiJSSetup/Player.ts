@@ -42,7 +42,7 @@ export class Player extends Character {
          EventManager.queueEvent(callback)
       }
       
-      if (Keybindings.checkInput() === this.direction) {
+      if (Keybindings.checkMovementInput() === this.direction) {
         if (!tilemap!.isBlocked(...this.getNextPosition(this.direction))) {
           this.isMoving = true;
         } else {
@@ -130,7 +130,7 @@ export class Player extends Character {
     if (this.isCharacterMoving()) {
       return this.updateMovement(sprite, tilemap);
     }
-    const input = Keybindings.checkInput() as Direction;
+    const input = Keybindings.checkMovementInput() as Direction;
     if (input === "none") {
       return;
     }

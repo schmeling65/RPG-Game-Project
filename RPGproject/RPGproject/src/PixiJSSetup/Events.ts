@@ -1,19 +1,23 @@
+import { Keybindings } from "../JSUtils/controlsAndKeybidings";
 import type { TileMap } from "./TileMap";
 
 type EventType = "steppedOnEvents" | "interactionEvents";
 
 export const EventManager = new (class {
   private eventFunctions: Map<string, Function>;
-  private hasEvent: boolean;
-  private eventCallback: string;
   private queueOfCallbacksOfEvents: string[]
   constructor() {
     this.queueOfCallbacksOfEvents = [];
     this.eventFunctions = new Map<string, Function>();
-    this.hasEvent = false;
-    this.eventCallback = "";
     this.addEventCallback("testCallback", this.testCallback);
+    this.addEventCallback("interactedCallback", this.interactedCallback)
+    this.setupInteractionEvent();
   }
+
+  setupInteractionEvent() {
+    Keybindings.setupKey("Space");
+  }
+
   addEventCallback(funcName: string, func: Function) {
     this.eventFunctions.set(funcName, func);
   }
@@ -26,10 +30,6 @@ export const EventManager = new (class {
 
   queueEvent(funcName: string){
     this.queueOfCallbacksOfEvents.push(funcName);
-  }
-
-  testCallback() {
-    alert("steppedOnEvent Proced");
   }
   triggerEvents() {
     for (let Eventnumber = 1; Eventnumber <= this.queueOfCallbacksOfEvents.length; Eventnumber++) {
@@ -47,5 +47,13 @@ export const EventManager = new (class {
         alert("No Function to be called. EventQueue is Empty!");
       }
     }
+  }
+
+  //testfuncs
+  testCallback() {
+    alert("steppedOnEvent Proced");
+  }
+  interactedCallback() {
+    alert("interaction Proced")
   }
 })();

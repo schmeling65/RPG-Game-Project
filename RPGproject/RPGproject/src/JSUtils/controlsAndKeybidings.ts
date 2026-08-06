@@ -1,22 +1,47 @@
 export type Direction = "none" | "up" | "down" | "left" | "right";
 
 export const Keybindings = new (class {
-  keys: Map<string, boolean>;
+  private keysPressed: Map<string, boolean> = new Map<string, boolean>();
+  private registeredKeys: Map<string,boolean> = new Map<string,boolean>();
   constructor() {
-    this.keys = new Map<string, boolean>();
+    document.addEventListener("keydown",this.pressingKey);
+    document.addEventListener("keyup",this.releasingKey)
   }
-  setupKeyDown(handler: (event: KeyboardEvent) => void) {
-    document.addEventListener("keydown", handler);
+
+  init(){
+    this.setupKey("ArrowUp");
+    this.setupKey("ArrowDown");
+    this.setupKey("ArrowLeft");
+    this.setupKey("ArrowRight");
+    this.setupKey("Space");
   }
-  setupKeyUp(handler: (event: KeyboardEvent) => void) {
-    document.addEventListener("keyup", handler);
+
+  pressingKey = (event:KeyboardEvent) =>  {
+    if (this.registeredKeys.has(event.code)){
+      event.preventDefault()
+    }
+    this.keysPressed.set(event.code,true);
   }
-  checkInput(): string {
+  
+  releasingKey = (event: KeyboardEvent) => {
+    this.keysPressed.set(event.code,false);
+  }
+
+  //Reference: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
+  setupKey(keyCode: string) {
+    this.registeredKeys.set(keyCode,true)
+  }
+
+  checkInteractionInput(): boolean {
+    return this.keysPressed.get("Space")!
+  }
+
+  checkMovementInput(): string {
     let newDirection: Direction = "none";
-    if (this.keys.get("ArrowUp")) newDirection = "up";
-    else if (this.keys.get("ArrowDown")) newDirection = "down";
-    else if (this.keys.get("ArrowLeft")) newDirection = "left";
-    else if (this.keys.get("ArrowRight")) newDirection = "right";
+    if (this.keysPressed.get("ArrowUp")) newDirection = "up";
+    else if (this.keysPressed.get("ArrowDown")) newDirection = "down";
+    else if (this.keysPressed.get("ArrowLeft")) newDirection = "left";
+    else if (this.keysPressed.get("ArrowRight")) newDirection = "right";
     return newDirection;
   }
 })();
