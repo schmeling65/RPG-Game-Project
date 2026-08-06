@@ -20,7 +20,7 @@ export class Player extends Character {
     this.sprite.position.set(
       this.characterTilePosX * 48,
       this.characterTilePosY * 48,
-    );
+    ); 
     return this.sprite;
   }
 
@@ -143,7 +143,7 @@ export class Player extends Character {
     this.moveProgressToNextTile = 0;
     return this.updateMovement(sprite,tilemap);
   }
-
+  
   getNextPosition(input: Direction): [number, number] {
     let coordinateX = 0;
     let coordinateY = 0;
@@ -151,9 +151,6 @@ export class Player extends Character {
     if (input === "up") coordinateY--;
     if (input === "left") coordinateX--;
     if (input === "right") coordinateX++;
-    return [
-      this.characterTilePosX + coordinateX,
-      this.characterTilePosY + coordinateY,
-    ];
+    return [this.characterTilePosX + coordinateX, this.characterTilePosY + coordinateY];
   }
 }

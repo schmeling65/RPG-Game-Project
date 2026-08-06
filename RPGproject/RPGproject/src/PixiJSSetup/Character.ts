@@ -23,7 +23,7 @@ export abstract class Character {
     xpos: number,
     ypos: number,
     viewdirection?: Direction,
-    animationSequence?: number[]
+    animationSequence?: number[],
   ) {
     this.name = name;
     this.textureFile = texturefile;
@@ -34,41 +34,50 @@ export abstract class Character {
     this.direction = viewdirection || "down";
     this.isMoving = false;
     this.moveProgressToNextTile = 0;
-    this.movementAnimationGenerator = Character.movementAnimaitonGenerator(animationSequence || [1, 0, -1, 0])
-    this.waitTimeForNextAnimation = (9 - this.walkSpeed) * 3
-    this.currentwaitTimeToNextAnimation = 0
+    this.movementAnimationGenerator = Character.movementAnimaitonGenerator(
+      animationSequence || [1, 0, -1, 0],
+    );
+    this.waitTimeForNextAnimation = (9 - this.walkSpeed) * 3;
+    this.currentwaitTimeToNextAnimation = 0;
   }
 
-  static *movementAnimaitonGenerator(sequence: number[]): Generator<number, void, string | undefined> {
+  getViewDirection() {
+    return this.direction;
+  }
+
+  getNextTileInViewDirection() {
+    let coordinateX = 0;
+    let coordinateY = 0;
+    if (this.direction === "down") coordinateY++;
+    if (this.direction === "up") coordinateY--;
+    if (this.direction === "left") coordinateX--;
+    if (this.direction === "right") coordinateX++;
+    return [this.characterTilePosX + coordinateX, this.characterTilePosY + coordinateY];
+  }
+
+  static *movementAnimaitonGenerator(
+    sequence: number[],
+  ): Generator<number, void, string | undefined> {
     let index = 0;
     while (true) {
-      let signal = yield sequence[index]
+      let signal = yield sequence[index];
       if (signal === "RESET") {
-        index = 3
-      }
-      else {
-        index = (index + 1) % sequence.length
+        index = 3;
+      } else {
+        index = (index + 1) % sequence.length;
       }
     }
   }
 
-
   async initTextureFromString() {
     await TextureManager.loadTextureOnDemand(this.textureFile);
-    let fullTextureObject = TextureManager.getAssetOrTextureFromCache(
-      this.textureFile,
-    );
+    let fullTextureObject = TextureManager.getAssetOrTextureFromCache(this.textureFile);
     for (let verticalFields = 0; verticalFields < 4; verticalFields++) {
       for (let horzontalFields = 0; horzontalFields < 3; horzontalFields++) {
         this.texture.push(
           new Texture({
             source: fullTextureObject,
-            frame: new Rectangle(
-              horzontalFields * 48,
-              verticalFields * 48,
-              48,
-              48,
-            ),
+            frame: new Rectangle(horzontalFields * 48, verticalFields * 48, 48, 48),
           }),
         );
       }
@@ -79,3 +88,4 @@ export abstract class Character {
     return Math.pow(2, this.walkSpeed) / 256;
   }
 }
+

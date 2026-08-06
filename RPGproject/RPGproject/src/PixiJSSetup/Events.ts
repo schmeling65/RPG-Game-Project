@@ -1,4 +1,5 @@
 import { Keybindings } from "../JSUtils/controlsAndKeybidings";
+import type { Player } from "./Player";
 import type { TileMap } from "./TileMap";
 
 type EventType = "steppedOnEvents" | "interactionEvents";
@@ -6,10 +7,12 @@ type EventType = "steppedOnEvents" | "interactionEvents";
 export const EventManager = new (class {
   private eventFunctions: Map<string, Function>;
   private queueOfCallbacksOfEvents: string[]
+  private suppressEvents: boolean;
   constructor() {
+    this.suppressEvents = false
     this.queueOfCallbacksOfEvents = [];
     this.eventFunctions = new Map<string, Function>();
-    this.addEventCallback("testCallback", this.testCallback);
+    this.addEventCallback("steppedOnCallback", this.steppedOnCallback);
     this.addEventCallback("interactedCallback", this.interactedCallback)
     this.setupInteractionEvent();
   }
@@ -31,8 +34,18 @@ export const EventManager = new (class {
   queueEvent(funcName: string){
     this.queueOfCallbacksOfEvents.push(funcName);
   }
-  triggerEvents() {
-    for (let Eventnumber = 1; Eventnumber <= this.queueOfCallbacksOfEvents.length; Eventnumber++) {
+  triggerEvents(player: Player, tilemap: TileMap) {
+    if (this.suppressEvents) {
+      return
+    }
+    if (Keybindings.checkInteractionInput()) {
+      //this.suppressEvents = true
+      let tile = player.getNextTileInViewDirection()
+      if(this.checkEventOnTile(tile[0],tile[1],tilemap,"interactionEvents")[0]) {
+        this.queueEvent("interactedCallback")
+      }
+    }
+    for (let Eventnumber = 1; Eventnumber <=  this.queueOfCallbacksOfEvents.length; Eventnumber++) {
       const funcName = this.queueOfCallbacksOfEvents.shift();
       if (funcName) {
         const callback = this.eventFunctions.get(funcName)
@@ -50,10 +63,10 @@ export const EventManager = new (class {
   }
 
   //testfuncs
-  testCallback() {
-    alert("steppedOnEvent Proced");
+  steppedOnCallback() {
+    console.log("Stepped On Tile Event Proced!")
   }
   interactedCallback() {
-    alert("interaction Proced")
+    console.log("Interaction Event Proced!")
   }
 })();

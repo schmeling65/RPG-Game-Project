@@ -87,9 +87,9 @@ export const PixiJSEnvironment = new (class {
 
   startTicker(app: Application) {
     app.ticker.add(() => {
-      this.EventManager!.triggerEvents()
       let playerSprite = this.SceneManager!.getScene("map")!.playersprite;
       let tilemap = this.SceneManager!.getScene("map")!.tilemap;
+      this.EventManager!.triggerEvents(this.player!,tilemap)
       playerSprite = this.player!.movePlayer(playerSprite, tilemap) || playerSprite;
       
       playerSprite.x = Math.max(

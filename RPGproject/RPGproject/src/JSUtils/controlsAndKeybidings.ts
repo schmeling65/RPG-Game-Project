@@ -13,7 +13,7 @@ export const Keybindings = new (class {
     this.setupKey("ArrowDown");
     this.setupKey("ArrowLeft");
     this.setupKey("ArrowRight");
-    this.setupKey("Space");
+    //this.setupKey("Space");
   }
 
   pressingKey = (event:KeyboardEvent) =>  {
