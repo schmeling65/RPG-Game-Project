@@ -2,7 +2,7 @@
   "applicationId": "js.neutralino.zero",
   "version": "1.0.0",
   "defaultMode": "window",
-  "documentRoot": "/RPGproject/dist/",
+  "documentRoot": "core/dist/",
   "url": "/",
   "enableServer": true,
   "enableNativeAPI": true,
@@ -17,7 +17,7 @@
       "height": 1080,
       "minWidth": 400,
       "minHeight": 200,
-      "icon": "/RPGproject/dist/icon/game.ico",
+      "icon": "core/dist/icon/game.ico",
       "fullscreen": true,
       "additionalBrowserArguments": "--disable-web-security",
       "enableInspector": true
@@ -25,9 +25,8 @@
   },
   "cli": {
     "binaryName": "RPGproject",
-    "resourcesPath": "RPGproject/dist/",
+    "resourcesPath": "core/dist/",
     "extensionsPath": "/extensions/",
-    "binaryVersion": "6.4.0",
-    "clientVersion": "6.4.0"
+    "distributionPath": "dist"
   }
 }

@@ -4,15 +4,16 @@
   "description": "my own rpg project",
   "main": "index.js",
   "scripts": {
-    "create-backup": ".\\node_modules\\.bin\\neu RPGproject --template neutralinojs/neutralinojs-zero",
-    "run": "cd RPGproject && ..\\node_modules\\.bin\\neu run",
-    "build": "cd RPGproject && ..\\node_modules\\.bin\\neu build --release",
-    "completebuild": "cd RPGproject && cd RPGproject && node node_modules\\typescript\\bin\\tsc && node node_modules\\vite\\bin\\vite.js build && cd .. && ..\\node_modules\\.bin\\neu build --clean",
-    "install-dependencies": "npm install && cd RPGproject\\RPGproject && npm install"
+    "run": "neu run",
+    "build": "neu build --release",
+    "precompletebuild":"npm run build --prefix core",
+    "completebuild": "neu build --clean",
+    "preinstallDependencies":"npm install",
+    "installDependencies": "npm -C core install"
   },
   "author": "schmeling65",
   "license": "ISC",
   "dependencies": {
-    "@neutralinojs/neu": "^11.6.0"
+    "@neutralinojs/neu": "^11.7.2"
   }
 }

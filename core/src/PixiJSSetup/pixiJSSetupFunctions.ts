@@ -1,11 +1,11 @@
 import { Application, Assets, Container} from "pixi.js";
-import { TextureManager } from "./TextureManager";
-import { TileMap } from "./TileMap";
-import { Player } from "./Player";
+import { TextureManager } from "./TextureManager.ts";
+import { TileMap } from "./TileMap.ts";
+import { Player } from "./Player.ts";
 
 export const PixiJSEnvironment = new (class {
   private SceneManager:
-    | (typeof import("../Scenes/SceneManager"))["SceneManager"]
+    | (typeof import("../Scenes/SceneManager.ts"))["SceneManager"]
     | null;
   private player: Player | null;
   private EventManager: (typeof import("./Events.ts"))["EventManager"] | null;
@@ -40,7 +40,7 @@ export const PixiJSEnvironment = new (class {
   }
 
   setupMapScene(app: Application) {
-    import("../Scenes/SceneManager").then((data) => {
+    import("../Scenes/SceneManager.ts").then((data) => {
       this.SceneManager = data.SceneManager;
       this.SceneManager.getScene("map")!.container = new Container();
       app.stage.addChild(
