@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "run": "neu run",
-    "build": "neu build --release",
+    "build": "neu build --clean",
     "precompletebuild":"npm run build --prefix core",
-    "completebuild": "neu build --clean",
+    "completebuild": "neu build --clean --release",
     "preinstallDependencies":"npm install",
     "installDependencies": "npm -C core install"
   },
