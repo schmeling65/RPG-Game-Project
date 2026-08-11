@@ -2,10 +2,8 @@ import { Sprite } from "pixi.js";
 import { Keybindings, type Direction } from "../JSUtils/controlsAndKeybidings";
 import type { TileMap } from "./TileMap";
 import { Character } from "./Character";
-//import { EventManager } from "./Events";
 
 export class Player extends Character {
-  //public playerSprite: Sprite | null
   constructor(
     name: string,
     texturefile: string,
@@ -14,7 +12,6 @@ export class Player extends Character {
     viewdirection?: Direction,
   ) {
     super(name, texturefile, xpos, ypos, viewdirection);
-    //this.playerSprite = null
   }
 
   static async createPlayer() {
@@ -27,33 +24,26 @@ export class Player extends Character {
   initPlayerSprite(): Sprite {
     this.sprite = new Sprite(this.texture[1]);
     this.sprite.position.set(
-      this.characterTilePosX * 48,
-      this.characterTilePosY * 48,
+      this.characterTilePos.xpos * 48,
+      this.characterTilePos.ypos * 48
     ); 
     return this.sprite;
   }
 
-  //TODO: Refactoring
   updateMovement(sprite: Sprite, tilemap: TileMap) {
     this.moveProgressToNextTile += this.distancePerFrame();
     let resetToStay;
 
     if (this.moveProgressToNextTile >= 1) {
-      if (this.direction === "up") this.characterTilePosY--;
-      if (this.direction === "down") this.characterTilePosY++;
-      if (this.direction === "left") this.characterTilePosX--;
-      if (this.direction === "right") this.characterTilePosX++;
+      if (this.direction === "up") this.characterTilePos.ypos--;
+      if (this.direction === "down") this.characterTilePos.ypos++;
+      if (this.direction === "left") this.characterTilePos.xpos--;
+      if (this.direction === "right") this.characterTilePos.xpos++;
 
       this.moveProgressToNextTile = 0;
-      /*
-      const [hasEvent,callback] = EventManager.checkEventOnTile(this.characterTilePosX,this.characterTilePosY,tilemap,"steppedOnEvents")
-      if (hasEvent) {
-         EventManager.queueEvent(callback)
-      }
-      */
       
       if (Keybindings.checkMovementInput() === this.direction) {
-        if (!tilemap!.isBlocked(...this.getNextPosition(this.direction))) {
+        if (!tilemap!.isBlocked(this.getNextPosition(this.direction))) {
           this.isMoving = true;
         } else {
           this.isMoving = false;
@@ -67,7 +57,6 @@ export class Player extends Character {
     }
     this.updateMovementAnimation(resetToStay);
     let spriteUpdatedScreenPos = this.updateScreenPosition(sprite);
-    //console.log(sprite.y)
     return spriteUpdatedScreenPos;
   }
 
@@ -109,8 +98,8 @@ export class Player extends Character {
     if (this.direction === "left") offsetX = -this.moveProgressToNextTile;
     if (this.direction === "right") offsetX = this.moveProgressToNextTile;
     console.log(sprite.x)
-    sprite.y = (this.characterTilePosY + offsetY) * 48;
-    sprite.x = (this.characterTilePosX + offsetX) * 48;
+    sprite.y = (this.characterTilePos.ypos + offsetY) * 48;
+    sprite.x = (this.characterTilePos.xpos + offsetX) * 48;
     return sprite;
   }
 
@@ -146,7 +135,7 @@ export class Player extends Character {
     }
     this.direction = input;
     this.setLookDirectionWhileMoving();
-    if (tilemap.isBlocked(...this.getNextPosition(input))) {
+    if (tilemap.isBlocked(this.getNextPosition(input))) {
       return;
     }
     this.isMoving = true;
@@ -154,13 +143,16 @@ export class Player extends Character {
     return this.updateMovement(sprite,tilemap);
   }
   
-  getNextPosition(input: Direction): [number, number] {
+  getNextPosition(input: Direction): Position {
     let coordinateX = 0;
     let coordinateY = 0;
     if (input === "down") coordinateY++;
     if (input === "up") coordinateY--;
     if (input === "left") coordinateX--;
     if (input === "right") coordinateX++;
-    return [this.characterTilePosX + coordinateX, this.characterTilePosY + coordinateY];
+    return {
+      xpos: this.characterTilePos.xpos + coordinateX,
+      ypos: this.characterTilePos.ypos + coordinateY
+    };
   }
 }

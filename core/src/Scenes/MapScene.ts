@@ -24,8 +24,6 @@ export class MapScene extends Scene {
     let playerSprite = this.player.sprite!;
     let tilemap = this.tilemap;
     this.eventManager.triggerEvent(this.player, tilemap)
-    //TODO:Eventmanager
-    //pixiJSEnv.getEventManagerObject()!.triggerEvents(pixiJSEnv.getPlayerObject()!,tilemap)
     playerSprite = this.player.movePlayer(playerSprite, tilemap) || playerSprite;
     playerSprite.x = Math.max(0, Math.min(playerSprite.x, (tilemap.columns - 1) * 48));
     playerSprite.y = Math.max(0, Math.min(playerSprite.y, (tilemap.rows - 1) * 48));

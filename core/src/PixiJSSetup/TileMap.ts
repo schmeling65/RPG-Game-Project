@@ -11,14 +11,14 @@ interface MapData {
   objectTiles: number[][];
   blockedTiles: number[];
   events: {
-      steppedOnTile: string[][],
-      interaction: string[][]
-  }}
+    steppedOnTile: string[][];
+    interaction: string[][];
+  };
+}
 
 export class TileMap extends CompositeTilemap {
   columns!: number;
   rows!: number;
-  //texturesStrings!: string[];
   groundTiles!: number[];
   groundTextures!: Record<number, textureMetaData>;
   objectTiles!: number[][];
@@ -32,7 +32,6 @@ export class TileMap extends CompositeTilemap {
 
   async initData(_jsonName: string) {
     let mapdata = await this.loadMapInformationsFromJsonFile(_jsonName);
-    //this.texturesStrings = mapdata.textures;
     this.columns = mapdata.width;
     this.rows = mapdata.height;
     this.groundTiles = mapdata.groundData;
@@ -69,28 +68,28 @@ export class TileMap extends CompositeTilemap {
     });
   }
 
-  isBlocked(x: number, y: number) {
-    return this.isOutOfBounds(x, y) || this.isBlockedTile(x, y);
+  isBlocked(pos: Position) {
+    return this.isOutOfBounds(pos) || this.isBlockedTile(pos);
   }
 
-  getTileID(x: number, y: number) {
-    return y * this.rows + x
+  getTileID(pos: Position) {
+    return pos.ypos * this.rows + pos.xpos;
   }
 
-  setTileBlocking(x:number, y:number) {
-    this.blockedTiles[this.getTileID(x,y)] = 1
+  setTileBlocking(pos: Position) {
+    this.blockedTiles[this.getTileID(pos)] = 1;
   }
 
-  removeTileBlocking(x:number, y:number) {
-    this.blockedTiles[this.getTileID(x,y)] = 0
+  removeTileBlocking(pos: Position) {
+    this.blockedTiles[this.getTileID(pos)] = 0;
   }
 
-  isBlockedTile(x: number, y: number) {
-    return this.blockedTiles[this.getTileID(x,y)];
+  isBlockedTile(pos: Position) {
+    return this.blockedTiles[this.getTileID(pos)];
   }
 
-  isOutOfBounds(x: number, y: number) {
-    return x < 0 || y < 0 || x >= this.columns || y >= this.rows;
+  isOutOfBounds(pos: Position) {
+    return pos.xpos < 0 || pos.ypos < 0 || pos.xpos >= this.columns || pos.ypos >= this.rows;
   }
 
   createGrid(

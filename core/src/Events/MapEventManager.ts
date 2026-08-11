@@ -20,26 +20,26 @@ export class MapEventManager extends EventManager {
     Keybindings.setupKey("Space");
   }
 
-  getEventOnTile(x: number, y: number, tilemap: TileMap) {
-    const tile = tilemap.getTileID(x, y);
+  getEventOnTile(pos: Position, tilemap: TileMap) {
+    const tile = tilemap.getTileID(pos);
     const events = tilemap[this.currentEvent as EventType];
     return events[tile];
   }
 
-  isEventOfTypeOnTile(x: number, y: number, tilemap: TileMap) {
-    const eventsTileData = this.getEventOnTile(x, y, tilemap);
+  isEventOfTypeOnTile(pos: Position, tilemap: TileMap) {
+    const eventsTileData = this.getEventOnTile(pos, tilemap);
     if (eventsTileData.length <= 0) return false;
     return true;
   }
 
-  isEventRepeating(x: number, y: number, tilemap: TileMap) {
-    const eventsTileData = this.getEventOnTile(x, y, tilemap);
+  isEventRepeating(pos: Position, tilemap: TileMap) {
+    const eventsTileData = this.getEventOnTile(pos, tilemap);
     if (eventsTileData[1] === "1") return true;
     return false;
   }
 
-  removeEvent(x: number, y: number, tilemap: TileMap) {
-    const eventsTileData = this.getEventOnTile(x, y, tilemap);
+  removeEvent(pos: Position, tilemap: TileMap) {
+    const eventsTileData = this.getEventOnTile(pos, tilemap);
     eventsTileData.length = 0;
   }
 
@@ -48,10 +48,10 @@ export class MapEventManager extends EventManager {
       return;
     }
     this.currentEvent = "steppedOnEvents";
-    if (this.isEventOfTypeOnTile(player.characterTilePosX, player.characterTilePosY, tilemap)) {
+    if (this.isEventOfTypeOnTile(player.characterTilePos, tilemap)) {
       this.eventFunctions.get("steppedOnEvents")!();
-      if (!this.isEventRepeating(player.characterTilePosX, player.characterTilePosY, tilemap)) {
-        this.removeEvent(player.characterTilePosX, player.characterTilePosY, tilemap);
+      if (!this.isEventRepeating(player.characterTilePos, tilemap)) {
+        this.removeEvent(player.characterTilePos, tilemap);
       }
       return;
     }
@@ -59,10 +59,10 @@ export class MapEventManager extends EventManager {
       //this.suppressEvents = true
       this.currentEvent = "interactionEvents";
       let tile = player.getNextTileInViewDirection();
-      if (this.isEventOfTypeOnTile(tile[0], tile[1], tilemap)) {
+      if (this.isEventOfTypeOnTile(tile, tilemap)) {
         this.eventFunctions.get("interactionEvents")!();
-        if (!this.isEventRepeating(player.characterTilePosX, player.characterTilePosY, tilemap)) {
-          this.removeEvent(player.characterTilePosX, player.characterTilePosY, tilemap);
+        if (!this.isEventRepeating(player.characterTilePos, tilemap)) {
+          this.removeEvent(player.characterTilePos, tilemap);
         }
         return;
       }

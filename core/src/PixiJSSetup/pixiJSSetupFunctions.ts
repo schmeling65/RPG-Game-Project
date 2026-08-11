@@ -1,19 +1,13 @@
 import { Application, Assets, Container} from "pixi.js";
 import { TextureManager } from "./TextureManager.ts";
-import { TileMap } from "./TileMap.ts";
-import { Player } from "./Player.ts";
 import { startTicker } from "./GameTicker.ts";
 
 export const PixiJSEnvironment = new (class {
   private SceneManager:
     | (typeof import("../Scenes/SceneManager.ts"))["SceneManager"]
     | null;
-  private player: Player | null;
-  private EventManager: (typeof import("./Events.ts"))["EventManager"] | null;
   constructor() {
-    this.EventManager = null;
     this.SceneManager = null;
-    this.player = null;
   }
   
   initApp(app: Application) {
@@ -45,7 +39,6 @@ export const PixiJSEnvironment = new (class {
     import("../Scenes/SceneManager.ts").then(async (data) => {
       this.SceneManager = data.SceneManager;
       await this.SceneManager.createDefaultScenes()
-      //this.SceneManager.getScene("map")!.container = new Container();
       app.stage.addChild(
         this.SceneManager.getScene("map")!.container as Container,
       );
@@ -56,36 +49,6 @@ export const PixiJSEnvironment = new (class {
 
   loadMapAssets(app: Application) {
     startTicker(app);
-    /*
-    Promise.all([this.createMap(), this.createPlayer(), this.createEventManager()])
-      .then(() => {
-        startTicker(app)
-      })
-      .catch
-      ();
-      */
-  }
-
-  async createEventManager() {
-    return import("./Events.ts").then((data) => {
-    this.EventManager = data.EventManager;
-    })
-  }
-  /*
-  async createPlayer() {
-    this.player = new Player("Player", "player", 0, 0);
-    await this.player.initTextureFromString();
-    let scene = this.SceneManager!.getScene("map")!;
-    scene.playersprite = this.player.initPlayer();
-    scene.container!.addChild(scene.playersprite);
-  }
-    */
-
-  async createMap() {
-    let scene = this.SceneManager!.getScene("map")!;
-    scene.tilemap = new TileMap();
-    scene.container!.addChild(scene.tilemap);
-    return scene.tilemap.initData("/levels/level_start.json");
   }
 
   async initAssetsEnvironment() {
