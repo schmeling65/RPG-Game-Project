@@ -1,11 +1,17 @@
 import { Rectangle, Sprite, Texture } from "pixi.js";
 import type { Direction } from "../JSUtils/controlsAndKeybidings";
 import { TextureManager } from "./TextureManager";
+ 
+type Position = {
+  xpos: number
+  ypos: number
+}
 
 export abstract class Character {
   name: string;
   textureFile: string;
   texture: Texture[] = [];
+  characterTilePos: Position;
   characterTilePosX: number;
   characterTilePosY: number;
   attachmentAboveHead: any;
@@ -27,6 +33,7 @@ export abstract class Character {
   ) {
     this.name = name;
     this.textureFile = texturefile;
+    this.characterTilePos = {xpos,ypos}
     this.characterTilePosX = xpos;
     this.characterTilePosY = ypos;
     this.attachmentAboveHead = null;
@@ -52,6 +59,7 @@ export abstract class Character {
     if (this.direction === "up") coordinateY--;
     if (this.direction === "left") coordinateX--;
     if (this.direction === "right") coordinateX++;
+    //return [this.characterTilePos.xpos + coordinateX, this.characterTilePos.ypos + coordinateY]
     return [this.characterTilePosX + coordinateX, this.characterTilePosY + coordinateY];
   }
 

@@ -2,6 +2,7 @@ import { Application, Assets, Container} from "pixi.js";
 import { TextureManager } from "./TextureManager.ts";
 import { TileMap } from "./TileMap.ts";
 import { Player } from "./Player.ts";
+import { startTicker } from "./GameTicker.ts";
 
 export const PixiJSEnvironment = new (class {
   private SceneManager:
@@ -14,6 +15,7 @@ export const PixiJSEnvironment = new (class {
     this.SceneManager = null;
     this.player = null;
   }
+  
   initApp(app: Application) {
     app.init({ background: "#000000", resizeTo: window }).then(() => {
       document.body.appendChild(app.canvas);
@@ -40,9 +42,10 @@ export const PixiJSEnvironment = new (class {
   }
 
   setupMapScene(app: Application) {
-    import("../Scenes/SceneManager.ts").then((data) => {
+    import("../Scenes/SceneManager.ts").then(async (data) => {
       this.SceneManager = data.SceneManager;
-      this.SceneManager.getScene("map")!.container = new Container();
+      await this.SceneManager.createDefaultScenes()
+      //this.SceneManager.getScene("map")!.container = new Container();
       app.stage.addChild(
         this.SceneManager.getScene("map")!.container as Container,
       );
@@ -52,12 +55,15 @@ export const PixiJSEnvironment = new (class {
   }
 
   loadMapAssets(app: Application) {
+    startTicker(app);
+    /*
     Promise.all([this.createMap(), this.createPlayer(), this.createEventManager()])
       .then(() => {
-        this.startTicker(app);
+        startTicker(app)
       })
       .catch
       ();
+      */
   }
 
   async createEventManager() {
@@ -65,7 +71,7 @@ export const PixiJSEnvironment = new (class {
     this.EventManager = data.EventManager;
     })
   }
-
+  /*
   async createPlayer() {
     this.player = new Player("Player", "player", 0, 0);
     await this.player.initTextureFromString();
@@ -73,6 +79,7 @@ export const PixiJSEnvironment = new (class {
     scene.playersprite = this.player.initPlayer();
     scene.container!.addChild(scene.playersprite);
   }
+    */
 
   async createMap() {
     let scene = this.SceneManager!.getScene("map")!;
@@ -83,35 +90,5 @@ export const PixiJSEnvironment = new (class {
 
   async initAssetsEnvironment() {
     await Assets.init().then(async () => {});
-  }
-
-  startTicker(app: Application) {
-    app.ticker.add(() => {
-      let playerSprite = this.SceneManager!.getScene("map")!.playersprite;
-      let tilemap = this.SceneManager!.getScene("map")!.tilemap;
-      this.EventManager!.triggerEvents(this.player!,tilemap)
-      playerSprite = this.player!.movePlayer(playerSprite, tilemap) || playerSprite;
-      
-      playerSprite.x = Math.max(
-        0,
-        Math.min(playerSprite.x, (tilemap.columns - 1) * 48),
-      );
-      playerSprite.y = Math.max(
-        0,
-        Math.min(playerSprite.y, (tilemap.rows - 1) * 48),
-      );
-
-      let camX = playerSprite.x - app.screen.width / 2;
-      let camY = playerSprite.y - app.screen.height / 2;
-
-      camX = Math.max(
-        0,
-        Math.min(camX, tilemap.columns * 48 - app.screen.width),
-      );
-      camY = Math.max(0, Math.min(camY, tilemap.rows * 48 - app.screen.height));
-
-      this.SceneManager!.getScene("map")!.container!.position.set(-camX, -camY);
-      console.log(playerSprite.x)
-    });
   }
 })();

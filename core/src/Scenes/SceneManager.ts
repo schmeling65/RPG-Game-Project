@@ -1,17 +1,21 @@
+import { MapScene } from "./MapScene";
 import { Scene } from "./Scene";
 
 export const SceneManager = new (class {
   private scenes: Map<string, Scene>;
-  //private activeSceneID: string | null;
+  private currentScene: string | null = null;
 
   constructor() {
     this.scenes = new Map();
     //TODO:later mainmenu
-    //this.activeSceneID = "";
-    this.addScene(new Scene("map"));
   }
 
-  addScene(scene: Scene) {
+  async createDefaultScenes() {
+    await this.addScene(new MapScene("map"));
+  }
+
+  async addScene(scene: Scene) {
+    await scene.start()
     this.scenes.set(scene.id, scene);
   }
 
@@ -19,8 +23,12 @@ export const SceneManager = new (class {
     this.scenes.delete(sceneID);
   }
 
+  getCurrentScene() {
+    return this.getScene(this.currentScene!)
+  }
+
   setActiveScene(sceneID: string) {
-    //this.activeSceneID = sceneID;
+    this.currentScene = sceneID
     this.scenes.get(sceneID)?.render();
   }
 

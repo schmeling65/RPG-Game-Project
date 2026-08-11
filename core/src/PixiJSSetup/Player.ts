@@ -2,9 +2,10 @@ import { Sprite } from "pixi.js";
 import { Keybindings, type Direction } from "../JSUtils/controlsAndKeybidings";
 import type { TileMap } from "./TileMap";
 import { Character } from "./Character";
-import { EventManager } from "./Events";
+//import { EventManager } from "./Events";
 
 export class Player extends Character {
+  //public playerSprite: Sprite | null
   constructor(
     name: string,
     texturefile: string,
@@ -13,9 +14,17 @@ export class Player extends Character {
     viewdirection?: Direction,
   ) {
     super(name, texturefile, xpos, ypos, viewdirection);
+    //this.playerSprite = null
   }
 
-  initPlayer(): Sprite {
+  static async createPlayer() {
+    let playerObject = new Player("Player","player",0,0)
+    await playerObject.initTextureFromString()
+    playerObject.initPlayerSprite()
+    return playerObject
+  }
+
+  initPlayerSprite(): Sprite {
     this.sprite = new Sprite(this.texture[1]);
     this.sprite.position.set(
       this.characterTilePosX * 48,
@@ -36,11 +45,12 @@ export class Player extends Character {
       if (this.direction === "right") this.characterTilePosX++;
 
       this.moveProgressToNextTile = 0;
-
+      /*
       const [hasEvent,callback] = EventManager.checkEventOnTile(this.characterTilePosX,this.characterTilePosY,tilemap,"steppedOnEvents")
       if (hasEvent) {
          EventManager.queueEvent(callback)
       }
+      */
       
       if (Keybindings.checkMovementInput() === this.direction) {
         if (!tilemap!.isBlocked(...this.getNextPosition(this.direction))) {
