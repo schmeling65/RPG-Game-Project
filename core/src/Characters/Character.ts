@@ -1,6 +1,5 @@
 import { Rectangle, Sprite, Texture } from "pixi.js";
-import type { Direction } from "../JSUtils/controlsAndKeybidings";
-import { TextureManager } from "./TextureManager";
+import { TextureManager } from "../PixiJSSetup/TextureManager";
 
 export abstract class Character {
   name: string;

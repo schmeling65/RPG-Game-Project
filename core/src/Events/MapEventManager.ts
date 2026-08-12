@@ -1,13 +1,15 @@
-import { Keybindings } from "../JSUtils/controlsAndKeybidings";
-import type { Player } from "../PixiJSSetup/Player";
+import type { Player } from "../Characters/Player";
+import type { MapKeybindings } from "../controls/Mapkeybindings";
 import type { TileMap } from "../PixiJSSetup/TileMap";
 import { EventManager } from "./EventManager";
 
 type EventType = "steppedOnEvents" | "interactionEvents";
 
 export class MapEventManager extends EventManager {
-  constructor() {
+  private keybindingsReference: MapKeybindings
+  constructor(keybindingsReference: MapKeybindings) {
     super();
+    this.keybindingsReference = keybindingsReference
     this.addEventCallback("steppedOnEvents", this.steppedOnCallback);
     this.addEventCallback("interactionEvents", this.interactedCallback);
     this.setupInteractionEvent();
@@ -17,7 +19,7 @@ export class MapEventManager extends EventManager {
   }
 
   setupInteractionEvent() {
-    Keybindings.setupKey("Space");
+    this.keybindingsReference.setupKey("Space");
   }
 
   getEventOnTile(pos: Position, tilemap: TileMap) {
@@ -55,7 +57,7 @@ export class MapEventManager extends EventManager {
       }
       return;
     }
-    if (Keybindings.checkInteractionInput()) {
+    if (this.keybindingsReference.checkInteractionInput()) {
       //this.suppressEvents = true
       this.currentEvent = "interactionEvents";
       let tile = player.getNextTileInViewDirection();

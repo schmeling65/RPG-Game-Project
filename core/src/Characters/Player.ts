@@ -1,21 +1,24 @@
 import { Sprite } from "pixi.js";
-import { Keybindings, type Direction } from "../JSUtils/controlsAndKeybidings";
-import type { TileMap } from "./TileMap";
+import type { TileMap } from "../PixiJSSetup/TileMap";
 import { Character } from "./Character";
+import type { MapKeybindings, Direction } from "../controls/Mapkeybindings";
 
 export class Player extends Character {
+  private keybindingsReference: MapKeybindings
   constructor(
     name: string,
     texturefile: string,
     xpos: number,
     ypos: number,
+    keybindingsReference: MapKeybindings,
     viewdirection?: Direction,
   ) {
     super(name, texturefile, xpos, ypos, viewdirection);
+    this.keybindingsReference = keybindingsReference
   }
 
-  static async createPlayer() {
-    let playerObject = new Player("Player","player",0,0)
+  static async createPlayer(keybindingsReference: MapKeybindings) {
+    let playerObject = new Player("Player","player",0,0, keybindingsReference)
     await playerObject.initTextureFromString()
     playerObject.initPlayerSprite()
     return playerObject
@@ -42,7 +45,7 @@ export class Player extends Character {
 
       this.moveProgressToNextTile = 0;
       
-      if (Keybindings.checkMovementInput() === this.direction) {
+      if (this.keybindingsReference.checkMovementInput() === this.direction) {
         if (!tilemap!.isBlocked(this.getNextPosition(this.direction))) {
           this.isMoving = true;
         } else {
@@ -129,7 +132,7 @@ export class Player extends Character {
     if (this.isCharacterMoving()) {
       return this.updateMovement(sprite, tilemap);
     }
-    const input = Keybindings.checkMovementInput() as Direction;
+    const input = this.keybindingsReference.checkMovementInput() as Direction;
     if (input === "none") {
       return;
     }

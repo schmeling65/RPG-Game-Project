@@ -1,23 +1,26 @@
-import { Player } from "../PixiJSSetup/Player";
+import { Player } from "../Characters/Player";
 import { Scene } from "./Scene";
 import { TileMap } from "../PixiJSSetup/TileMap";
 import type { Application } from "pixi.js";
 import { MapEventManager } from "../Events/MapEventManager";
+import { MapKeybindings } from "../controls/Mapkeybindings";
 
 export class MapScene extends Scene {
   private player!: Player;
   private tilemap!: TileMap;
   private eventManager!: MapEventManager
+  private keyBindings!: MapKeybindings
   constructor(name: string) {
     super(name);
   }
   async start() {
+    this.keyBindings = new MapKeybindings()
     this.tilemap = new TileMap();
     this.container.addChild(this.tilemap)
     await this.tilemap.initData("/levels/level_start.json");
-    this.player = await Player.createPlayer();
+    this.player = await Player.createPlayer(this.keyBindings);
     this.container.addChild(this.player.sprite!);
-    this.eventManager = new MapEventManager()
+    this.eventManager = new MapEventManager(this.keyBindings)
   }
 
   update(app: Application): void {
