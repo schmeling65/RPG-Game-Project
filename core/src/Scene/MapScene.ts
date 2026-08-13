@@ -3,7 +3,7 @@ import { Scene } from "./Scene";
 import { TileMap } from "../PixiJSSetup/TileMap";
 import type { Application } from "pixi.js";
 import { MapEventManager } from "../Events/MapEventManager";
-import { MapKeybindings } from "../controls/Mapkeybindings";
+import { MapKeybindings } from "../Controls/Mapkeybindings";
 
 export class MapScene extends Scene {
   private player!: Player;
@@ -27,7 +27,7 @@ export class MapScene extends Scene {
     let playerSprite = this.player.sprite!;
     let tilemap = this.tilemap;
     this.eventManager.triggerEvent(this.player, tilemap)
-    playerSprite = this.player.movePlayer(playerSprite, tilemap) || playerSprite;
+    playerSprite = this.player.moveCharacter(playerSprite, tilemap) || playerSprite;
     playerSprite.x = Math.max(0, Math.min(playerSprite.x, (tilemap.columns - 1) * 48));
     playerSprite.y = Math.max(0, Math.min(playerSprite.y, (tilemap.rows - 1) * 48));
     let camX = playerSprite.x - app.screen.width / 2;

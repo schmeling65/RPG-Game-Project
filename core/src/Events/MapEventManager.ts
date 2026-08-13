@@ -1,5 +1,5 @@
 import type { Player } from "../Characters/Player";
-import type { MapKeybindings } from "../controls/Mapkeybindings";
+import type { MapKeybindings } from "../Controls/Mapkeybindings";
 import type { TileMap } from "../PixiJSSetup/TileMap";
 import { EventManager } from "./EventManager";
 

@@ -4,7 +4,7 @@ import { startTicker } from "./GameTicker.ts";
 
 export const PixiJSEnvironment = new (class {
   private SceneManager:
-    | (typeof import("../Scenes/SceneManager.ts"))["SceneManager"]
+    | (typeof import("../Scene/SceneManager.ts"))["SceneManager"]
     | null;
   constructor() {
     this.SceneManager = null;
@@ -36,7 +36,7 @@ export const PixiJSEnvironment = new (class {
   }
 
   setupMapScene(app: Application) {
-    import("../Scenes/SceneManager.ts").then(async (data) => {
+    import("../Scene/SceneManager.ts").then(async (data) => {
       this.SceneManager = data.SceneManager;
       await this.SceneManager.createDefaultScenes()
       app.stage.addChild(

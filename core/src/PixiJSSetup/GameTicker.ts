@@ -1,5 +1,5 @@
 import type { Application } from "pixi.js";
-import { SceneManager } from "../Scenes/SceneManager";
+import { SceneManager } from "../Scene/SceneManager";
 
 export function startTicker(app: Application) {
     app.ticker.add(() => {
@@ -8,7 +8,7 @@ export function startTicker(app: Application) {
       let playerSprite = pixiJSEnv.getSceneManagerObject()!.getScene("map")!.playersprite;
       let tilemap = pixiJSEnv.getSceneManagerObject()!.getScene("map")!.tilemap;
       pixiJSEnv.getEventManagerObject()!.triggerEvents(pixiJSEnv.getPlayerObject()!,tilemap)
-      playerSprite = pixiJSEnv.getPlayerObject()!.movePlayer(playerSprite, tilemap) || playerSprite;
+      playerSprite = pixiJSEnv.getPlayerObject()!.moveCharacter(playerSprite, tilemap) || playerSprite;
       
       playerSprite.x = Math.max(
         0,
