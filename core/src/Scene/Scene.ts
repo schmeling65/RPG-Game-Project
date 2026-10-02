@@ -8,7 +8,7 @@ export abstract class Scene {
     this.id = _name;
     this.container = new Container;
   }
-  abstract start(): Promise<void> | void
+  abstract create(datafile: string): Promise<void> | void
   abstract update(...args: any[]): void
   abstract render(): void
   abstract destroy(): void

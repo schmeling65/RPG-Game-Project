@@ -1,4 +1,3 @@
-import { Sprite } from "pixi.js";
 import type { TileMap } from "../PixiJSSetup/TileMap";
 import { Character } from "./Character";
 import type { MapKeybindings } from "../Controls/Mapkeybindings";
@@ -24,9 +23,17 @@ export class Player extends Character {
     return playerObject
   }
 
+  handlePlayer(tilemap: TileMap) {
+    this.moveCharacter(tilemap)
+    this.keepPlayerInsideOfBoundries(tilemap)
+  }
 
+  keepPlayerInsideOfBoundries(tilemap: TileMap) {
+    this.sprite!.x = Math.max(0, Math.min(this.sprite!.x, (tilemap.columns - 1) * 48));
+    this.sprite!.y = Math.max(0, Math.min(this.sprite!.y, (tilemap.rows - 1) * 48));
+  }
 
-  updateMovement(sprite: Sprite, tilemap: TileMap) {
+  updateMovement(tilemap: TileMap) {
     this.moveProgressToNextTile += this.distancePerFrame();
     let resetToStay;
 
@@ -52,13 +59,13 @@ export class Player extends Character {
       this.currentwaitTimeToNextAnimation = this.waitTimeForNextAnimation;
     }
     this.updateMovementAnimation(resetToStay);
-    let spriteUpdatedScreenPos = this.updateScreenPosition(sprite);
+    let spriteUpdatedScreenPos = this.updateScreenPosition();
     return spriteUpdatedScreenPos;
   }
 
-  moveCharacter(sprite: Sprite, tilemap: TileMap) {
+  moveCharacter(tilemap: TileMap) {
     if (this.isCharacterMoving()) {
-      return this.updateMovement(sprite, tilemap);
+      return this.updateMovement(tilemap);
     }
     const input = this.keybindingsReference.checkMovementInput() as Direction;
     if (input === "none") {
@@ -71,6 +78,6 @@ export class Player extends Character {
     }
     this.isMoving = true;
     this.moveProgressToNextTile = 0;
-    return this.updateMovement(sprite,tilemap);
+    return this.updateMovement(tilemap);
   }
 }

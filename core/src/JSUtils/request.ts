@@ -1,8 +1,8 @@
 export const Requester = new (class {
   constructor() {}
 
-  makeXMLHttpRequest(_PathOrFile: string) {
-    return new Promise<string[]>(function (resolve, reject) {
+  makeXMLHttpRequest<T>(_PathOrFile: string) {
+    return new Promise<T>(function (resolve, reject) {
       let xhr = new XMLHttpRequest();
       xhr.open("GET", _PathOrFile);
       xhr.overrideMimeType("application/json");
@@ -20,5 +20,15 @@ export const Requester = new (class {
       window.name = "";
       xhr.send();
     });
+  }
+
+    async loadLevelInformationsFromJsonFile(filename: string) {
+    return await this.makeXMLHttpRequest<levelimport>(filename)
+    /*
+    then((resolve: levelimport) => {
+      let mapdata = resolve;
+      return mapdata;
+    });
+    */
   }
 })();

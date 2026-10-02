@@ -41,8 +41,8 @@ export abstract class Character {
     this.currentwaitTimeToNextAnimation = 0;
   }
 
-  abstract moveCharacter(sprite: Sprite, tilemap: TileMap): Sprite | undefined
-  abstract updateMovement(sprite: Sprite, tilemap: TileMap): Sprite
+  abstract moveCharacter(tilemap: TileMap): Sprite | undefined
+  abstract updateMovement(tilemap: TileMap): Sprite
 
   initPlayerSprite() {
       this.sprite = new Sprite(this.texture[1]);
@@ -129,7 +129,7 @@ export abstract class Character {
     }
   }
 
-  updateScreenPosition(sprite: Sprite) {
+  updateScreenPosition() {
     let offsetX = 0;
     let offsetY = 0;
 
@@ -137,10 +137,10 @@ export abstract class Character {
     if (this.direction === "up") offsetY = -this.moveProgressToNextTile;
     if (this.direction === "left") offsetX = -this.moveProgressToNextTile;
     if (this.direction === "right") offsetX = this.moveProgressToNextTile;
-    console.log(sprite.x)
-    sprite.y = (this.characterTilePos.ypos + offsetY) * 48;
-    sprite.x = (this.characterTilePos.xpos + offsetX) * 48;
-    return sprite;
+    console.log(this.sprite!.x)
+    this.sprite!.y = (this.characterTilePos.ypos + offsetY) * 48;
+    this.sprite!.x = (this.characterTilePos.xpos + offsetX) * 48;
+    return this.sprite!;
   }
 
   isCharacterMoving(): boolean {

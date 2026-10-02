@@ -1,7 +1,7 @@
 import { CompositeTilemap } from "@pixi/tilemap";
-import { Requester } from "../JSUtils/request";
 import { TextureManager, type textureMetaData } from "./TextureManager";
 
+/*
 interface MapData {
   textures: string[];
   objectstextures: string[];
@@ -15,6 +15,7 @@ interface MapData {
     interaction: string[][];
   };
 }
+  */
 
 export class TileMap extends CompositeTilemap {
   columns!: number;
@@ -30,8 +31,7 @@ export class TileMap extends CompositeTilemap {
     super();
   }
 
-  async initData(_jsonName: string) {
-    let mapdata = await this.loadMapInformationsFromJsonFile(_jsonName);
+  async initData(mapdata: MapData) {
     this.columns = mapdata.width;
     this.rows = mapdata.height;
     this.groundTiles = mapdata.groundData;
@@ -59,13 +59,6 @@ export class TileMap extends CompositeTilemap {
     this.interactionEvents = mapdata.events.interaction;
     this.createGrid(this.groundTiles, this.groundTextures);
     this.createGrid(this.objectTiles, this.objectTextures);
-  }
-
-  async loadMapInformationsFromJsonFile(filename: string) {
-    return await Requester.makeXMLHttpRequest(filename).then((resolve: unknown) => {
-      let mapdata = resolve as MapData;
-      return mapdata;
-    });
   }
 
   isBlocked(pos: Position) {

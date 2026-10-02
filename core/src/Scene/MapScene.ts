@@ -4,43 +4,52 @@ import { TileMap } from "../PixiJSSetup/TileMap";
 import type { Application } from "pixi.js";
 import { MapEventManager } from "../Events/MapEventManager";
 import { MapKeybindings } from "../Controls/Mapkeybindings";
+import type { NPC } from "../Characters/NPC";
+import { Requester } from "../JSUtils/request";
 
 export class MapScene extends Scene {
   private player!: Player;
   private tilemap!: TileMap;
   private eventManager!: MapEventManager
   private keyBindings!: MapKeybindings
+  private npcs!: NPC[]
   constructor(name: string) {
     super(name);
   }
-  async start() {
+  async create(levelfile: string) {
+    let filedata: levelimport = await Requester.loadLevelInformationsFromJsonFile(levelfile);
+    //let npcs = filedata.npcs
+    let mapdata = filedata.tilemapData
+
+
     this.keyBindings = new MapKeybindings()
     this.tilemap = new TileMap();
     this.container.addChild(this.tilemap)
-    await this.tilemap.initData("/levels/level_start.json");
+    await this.tilemap.initData(mapdata);
     this.player = await Player.createPlayer(this.keyBindings);
     this.container.addChild(this.player.sprite!);
     this.eventManager = new MapEventManager(this.keyBindings)
   }
 
   update(app: Application): void {
-    let playerSprite = this.player.sprite!;
-    let tilemap = this.tilemap;
-    this.eventManager.triggerEvent(this.player, tilemap)
-    playerSprite = this.player.moveCharacter(playerSprite, tilemap) || playerSprite;
-    playerSprite.x = Math.max(0, Math.min(playerSprite.x, (tilemap.columns - 1) * 48));
-    playerSprite.y = Math.max(0, Math.min(playerSprite.y, (tilemap.rows - 1) * 48));
-    let camX = playerSprite.x - app.screen.width / 2;
-    let camY = playerSprite.y - app.screen.height / 2;
-
-    camX = Math.max(0, Math.min(camX, tilemap.columns * 48 - app.screen.width));
-    camY = Math.max(0, Math.min(camY, tilemap.rows * 48 - app.screen.height));
-
-    this.container!.position.set(-camX, -camY);
-    console.log(playerSprite.x);
+    this.eventManager.triggerEvent(this.player, this.tilemap)
+    //handle NPCS befor player?
+    this.player.handlePlayer(this.tilemap)
+    this.npcs.forEach((npc) => npc.handleNPC())
+    this.handleCamera(app)
   }
   render(): void {
     this.container!.visible = true;
   }
   destroy(): void {}
+
+  handleCamera(app: Application) {
+    let camX = this.player.sprite!.x - app.screen.width / 2;
+    let camY = this.player.sprite!.y - app.screen.height / 2;
+
+    camX = Math.max(0, Math.min(camX, this.tilemap.columns * 48 - app.screen.width));
+    camY = Math.max(0, Math.min(camY, this.tilemap.rows * 48 - app.screen.height));
+
+    this.container!.position.set(-camX, -camY);
+  }
 }

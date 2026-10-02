@@ -15,7 +15,7 @@ export const SceneManager = new (class {
   }
 
   async addScene(scene: Scene) {
-    await scene.start()
+    await scene.create("/levels/level_start.json")
     this.scenes.set(scene.id, scene);
   }
 
