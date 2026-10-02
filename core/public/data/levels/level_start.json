@@ -1,4 +1,11 @@
 {
+    "npcData" : [
+        {
+        "id": "someone",
+        "x": 7,
+        "y": 7
+        }
+    ],
     "tilemapData": {
         "textures": ["Projekt_Tiles_2","Projekt_Tiles"],
         "objectstextures":["Mulleimer","Mulleimer_Voll"],

@@ -12,10 +12,10 @@ export const TextureManager = new (class {
 
   loadTextureInformations() {
     let tiletextures = Requester.makeXMLHttpRequest<string[]>(
-      "/environmentdata/tiletextures.json",
+      "/data/environmentdata/tile_textures.json",
     );
     let charactertextures = Requester.makeXMLHttpRequest<string[]>(
-      "/environmentdata/charactertextures.json",
+      "/data/environmentdata/character_textures.json",
     );
     return Promise.all([tiletextures, charactertextures]);
   }

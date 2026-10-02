@@ -22,12 +22,12 @@ export const PixiJSEnvironment = new (class {
     TextureManager.loadTextureInformations().then(
       ([tiletexures, charactertextures]) => {
         tiletexures.forEach((element: string) => {
-          Assets.add({ alias: element, src: "/tilessets/" + element + ".png" });
+          Assets.add({ alias: element, src: "/img/tilessets/" + element + ".png" });
         });
         charactertextures.forEach((element: string) => {
           Assets.add({
             alias: element,
-            src: "/characters/" + element + ".png",
+            src: "/img/characters/" + element + ".png",
           });
         });
         this.setupMapScene(app);

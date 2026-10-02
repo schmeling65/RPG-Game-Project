@@ -15,6 +15,14 @@ export class NPC extends Character {
     this.commands = []
   }
 
+  static async createNPCs(npcsdata: npcData[]): Promise<NPC[]> {
+    let npcs = []
+    npcsdata.forEach((npcdata) => {
+      //npcs.push(new NPC())
+    })
+    return []
+  }
+
   handleNPC() {
 
   }

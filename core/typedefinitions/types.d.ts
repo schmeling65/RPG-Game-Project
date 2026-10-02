@@ -20,7 +20,13 @@ interface MapData {
   };
 }
 
+interface npcData {
+  id: string,
+  x: number,
+  y: number
+}
+
 interface levelimport {
   tilemapData: MapData
-  npcs: any
+  npcData: npcData[]
 }

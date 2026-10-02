@@ -4,7 +4,7 @@ import { TileMap } from "../PixiJSSetup/TileMap";
 import type { Application } from "pixi.js";
 import { MapEventManager } from "../Events/MapEventManager";
 import { MapKeybindings } from "../Controls/Mapkeybindings";
-import type { NPC } from "../Characters/NPC";
+import { NPC } from "../Characters/NPC";
 import { Requester } from "../JSUtils/request";
 
 export class MapScene extends Scene {
@@ -17,17 +17,14 @@ export class MapScene extends Scene {
     super(name);
   }
   async create(levelfile: string) {
-    let filedata: levelimport = await Requester.loadLevelInformationsFromJsonFile(levelfile);
-    //let npcs = filedata.npcs
-    let mapdata = filedata.tilemapData
-
-
+    let filedata = await Requester.loadLevelInformationsFromJsonFile(levelfile);
     this.keyBindings = new MapKeybindings()
     this.tilemap = new TileMap();
     this.container.addChild(this.tilemap)
-    await this.tilemap.initData(mapdata);
+    await this.tilemap.initData(filedata.tilemapData);
     this.player = await Player.createPlayer(this.keyBindings);
     this.container.addChild(this.player.sprite!);
+    this.npcs = await NPC.createNPCs(filedata.npcData)
     this.eventManager = new MapEventManager(this.keyBindings)
   }
 
@@ -35,7 +32,7 @@ export class MapScene extends Scene {
     this.eventManager.triggerEvent(this.player, this.tilemap)
     //handle NPCS befor player?
     this.player.handlePlayer(this.tilemap)
-    this.npcs.forEach((npc) => npc.handleNPC())
+    //this.npcs.forEach((npc) => npc.handleNPC())
     this.handleCamera(app)
   }
   render(): void {
