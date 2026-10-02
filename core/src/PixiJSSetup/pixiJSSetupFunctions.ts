@@ -1,47 +1,40 @@
-import { Application, Assets, Container} from "pixi.js";
+import { Application, Assets, Container } from "pixi.js";
 import { TextureManager } from "./TextureManager.ts";
 import { startTicker } from "./GameTicker.ts";
 
 export const PixiJSEnvironment = new (class {
-  private SceneManager:
-    | (typeof import("../Scene/SceneManager.ts"))["SceneManager"]
-    | null;
+  private SceneManager: (typeof import("../Scene/SceneManager.ts"))["SceneManager"] | null;
   constructor() {
     this.SceneManager = null;
   }
-  
+
   initApp(app: Application) {
-    app.init({ background: "#000000", resizeTo: window }).then(() => {
+    app.init({ background: "#000000", resizeTo: window }).then(async () => {
       document.body.appendChild(app.canvas);
-      this.loadEnvironment(app);
+      await this.loadEnvironment(app);
     });
   }
 
-  loadEnvironment(app: Application) {
+  async loadEnvironment(app: Application) {
     this.initAssetsEnvironment();
-    TextureManager.loadTextureInformations().then(
-      ([tiletexures, charactertextures]) => {
-        tiletexures.forEach((element: string) => {
-          Assets.add({ alias: element, src: "/img/tilessets/" + element + ".png" });
-        });
-        charactertextures.forEach((element: string) => {
-          Assets.add({
-            alias: element,
-            src: "/img/characters/" + element + ".png",
-          });
-        });
-        this.setupMapScene(app);
-      },
-    );
+    let [tiletexures, charactertextures] = await TextureManager.loadTextureInformations();
+    tiletexures.forEach((element: string) => {
+      Assets.add({ alias: element, src: "/img/tilessets/" + element + ".png" });
+    });
+    charactertextures.forEach((element: string) => {
+      Assets.add({
+        alias: element,
+        src: "/img/characters/" + element + ".png",
+      });
+    });
+    this.setupMapScene(app);
   }
 
   setupMapScene(app: Application) {
     import("../Scene/SceneManager.ts").then(async (data) => {
       this.SceneManager = data.SceneManager;
-      await this.SceneManager.createDefaultScenes()
-      app.stage.addChild(
-        this.SceneManager.getScene("map")!.container as Container,
-      );
+      await this.SceneManager.createDefaultScenes();
+      app.stage.addChild(this.SceneManager.getScene("map")!.container as Container);
       this.SceneManager.setActiveScene("map");
       this.loadMapAssets(app);
     });
@@ -55,3 +48,4 @@ export const PixiJSEnvironment = new (class {
     await Assets.init().then(async () => {});
   }
 })();
+

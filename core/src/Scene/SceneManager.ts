@@ -11,6 +11,7 @@ export const SceneManager = new (class {
   }
 
   async createDefaultScenes() {
+    MapScene.loadNPCsdata()
     await this.addScene(new MapScene("map"));
   }
 

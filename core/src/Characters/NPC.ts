@@ -15,16 +15,15 @@ export class NPC extends Character {
     this.commands = []
   }
 
-  static async createNPCs(npcsdata: npcData[]): Promise<NPC[]> {
-    let npcs = []
-    npcsdata.forEach((npcdata) => {
-      //npcs.push(new NPC())
+  static async createNPCs(npcsInMapdata: npcData[], globalNPCData: OneNPCOfGlobalNPCsData[]): Promise<NPC[]> {
+    let npcs: NPC[] = []
+    npcsInMapdata.forEach((npcdata) => {
+      npcs.push(new NPC(globalNPCData[npcdata.id].name,globalNPCData[npcdata.id].texture,npcdata.x,npcdata.y,"down"))
     })
-    return []
+    return npcs
   }
 
   handleNPC() {
-
   }
 
   updateMovement(tilemap: TileMap): Sprite {

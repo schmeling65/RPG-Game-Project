@@ -20,13 +20,18 @@ interface MapData {
   };
 }
 
-interface npcData {
-  id: string,
-  x: number,
-  y: number
-}
-
 interface levelimport {
   tilemapData: MapData
   npcData: npcData[]
+}
+
+interface npcData {
+  id: number
+  x: number
+  y: number
+}
+
+interface OneNPCOfGlobalNPCsData {
+    name: string
+    texture: string
 }
