@@ -22,6 +22,7 @@ export const PixiJSEnvironment = new (class {
       Assets.add({ alias: element, src: "/img/tilessets/" + element + ".png" });
     });
     charactertextures.forEach((element: string) => {
+      console.log(element)
       Assets.add({
         alias: element,
         src: "/img/characters/" + element + ".png",

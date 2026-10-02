@@ -19,7 +19,7 @@ export class Player extends Character {
   static async createPlayer(keybindingsReference: MapKeybindings) {
     let playerObject = new Player("Player","player",0,0, keybindingsReference)
     await playerObject.initTextureFromString()
-    playerObject.initPlayerSprite()
+    playerObject.initCharacterSprite()
     return playerObject
   }
 

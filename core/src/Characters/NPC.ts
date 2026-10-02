@@ -17,9 +17,12 @@ export class NPC extends Character {
 
   static async createNPCs(npcsInMapdata: npcData[], globalNPCData: OneNPCOfGlobalNPCsData[]): Promise<NPC[]> {
     let npcs: NPC[] = []
-    npcsInMapdata.forEach((npcdata) => {
-      npcs.push(new NPC(globalNPCData[npcdata.id].name,globalNPCData[npcdata.id].texture,npcdata.x,npcdata.y,"down"))
-    })
+    for (const npcdata of npcsInMapdata) {
+      let npc = new NPC(globalNPCData[npcdata.id].name,globalNPCData[npcdata.id].texture,npcdata.x,npcdata.y)
+        await npc.initTextureFromString()
+        npc.initCharacterSprite()
+      npcs.push(npc)
+    }
     return npcs
   }
 

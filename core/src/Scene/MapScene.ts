@@ -31,6 +31,9 @@ export class MapScene extends Scene {
     this.player = await Player.createPlayer(this.keyBindings);
     this.container.addChild(this.player.sprite!);
     this.npcs = await NPC.createNPCs(filedata.npcData, MapScene.globalNPCdata)
+    for (const npc of this.npcs) {
+      this.container.addChild(npc.sprite!)
+    }
     this.eventManager = new MapEventManager(this.keyBindings)
   }
 

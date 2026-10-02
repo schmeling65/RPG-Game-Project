@@ -44,7 +44,7 @@ export abstract class Character {
   abstract moveCharacter(tilemap: TileMap): Sprite | undefined
   abstract updateMovement(tilemap: TileMap): Sprite
 
-  initPlayerSprite() {
+  initCharacterSprite() {
       this.sprite = new Sprite(this.texture[1]);
       this.sprite.position.set(
         this.characterTilePos.xpos * 48,
